@@ -1,0 +1,10 @@
+ChocoApp/*.iml
+ChocoApp/.gradle
+ChocoApp/local.properties
+ChocoApp/.idea/libraries
+ChocoApp/.idea/modules.xml
+ChocoApp/.idea/workspace.xml
+*.DS_Store
+ChocoApp/app/build
+ChocoApp/captures
+ChocoApp/.externalNativeBuild
