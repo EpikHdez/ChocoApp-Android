@@ -66,7 +66,7 @@ public class  RestaurantActivity extends AppCompatActivity implements BaseSlider
         sliderLayout.addOnPageChangeListener(this);
 
     }
-    public void openRestaurant(){
+    public void openProducts(View view){
         Intent activity = new Intent(this, ProductsActivity.class);
         startActivity(activity);
     }

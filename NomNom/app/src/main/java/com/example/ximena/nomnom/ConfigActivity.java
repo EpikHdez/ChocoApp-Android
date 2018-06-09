@@ -1,5 +1,6 @@
 package com.example.ximena.nomnom;
 
+import android.content.Intent;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -25,6 +26,10 @@ public class ConfigActivity extends AppCompatActivity {
         mGalleryView = (PlaceHolderView)findViewById(R.id.galleryView);
         setupDrawer();
 
+    }
+    public void openHelp(View view) {
+        Intent activity = new Intent(this, HelpActivity.class);
+        startActivity(activity);
     }
     private void setupDrawer(){
         mDrawerView

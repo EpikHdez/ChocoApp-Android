@@ -42,6 +42,7 @@ public class MainActivity extends AppCompatActivity implements IAPICaller {
                     @Override
                     public void onSuccess(LoginResult loginResult) {
                         // App code
+                        openHomenotView();
                     }
 
                     @Override
@@ -90,6 +91,10 @@ public class MainActivity extends AppCompatActivity implements IAPICaller {
         }catch (Exception e){
 
         }
+    }
+    public void openHomenotView() {
+        Intent activity = new Intent(this, HomeActivity.class);
+        startActivity(activity);
     }
     public void openRegister(View view) {
         Intent activity = new Intent(this, RegisterActivity.class);

@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 
+import com.daimajia.slider.library.SliderLayout;
 import com.mindorks.placeholderview.PlaceHolderView;
 
 public class ProductActivity extends AppCompatActivity {
@@ -24,6 +25,13 @@ public class ProductActivity extends AppCompatActivity {
         mToolbar = (Toolbar)findViewById(R.id.toolbar);
         mGalleryView = (PlaceHolderView)findViewById(R.id.galleryView);
         setupDrawer();
+
+
+
+
+
+
+
 
     }
     private void setupDrawer(){

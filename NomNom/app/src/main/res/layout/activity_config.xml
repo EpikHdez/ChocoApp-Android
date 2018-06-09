@@ -43,18 +43,42 @@
                 android:text="Buscar Puntos cerca de..."
                 android:textSize="18sp" />
 
-            <ListView
+            <Button
+                android:id="@+id/button9"
                 android:layout_width="match_parent"
-                android:layout_height="400dp">
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="25dp"
+                android:layout_marginRight="25dp"
+                android:background="@drawable/space"
+                android:text="Ubicación Actual" />
 
+            <Button
+                android:id="@+id/button11"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="25dp"
+                android:layout_marginRight="25dp"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/space"
+                android:text="Casa" />
 
-            </ListView>
+            <Button
+                android:id="@+id/button10"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="20dp"
+                android:layout_marginLeft="25dp"
+                android:layout_marginRight="25dp"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/space"
+                android:text="Trabajo" />
 
             <Button
                 android:id="@+id/button4"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@drawable/button"
+                android:onClick="openHelp"
                 android:text="Ayuda"
                 android:textColor="@color/common_google_signin_btn_text_dark_default" />
         </LinearLayout>
