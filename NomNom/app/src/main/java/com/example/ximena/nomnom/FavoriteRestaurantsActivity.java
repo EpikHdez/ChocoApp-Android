@@ -1,6 +1,7 @@
 package com.example.ximena.nomnom;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.support.design.widget.Snackbar;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -60,12 +61,15 @@ public class FavoriteRestaurantsActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
                 Restaurant dataModel= dataModels.get(position);
+                openRestaurant();
 
-                Snackbar.make(view, dataModel.getName()+"\n"+dataModel.getType(), Snackbar.LENGTH_LONG)
-                        .setAction("No action", null).show();
             }
         });
 
+    }
+    public void openRestaurant(){
+        Intent activity = new Intent(this, RestaurantActivity.class);
+        startActivity(activity);
     }
     private void setupDrawer(){
         mDrawerView

@@ -1,6 +1,7 @@
 package com.example.ximena.nomnom;
 
 import android.content.Context;
+import android.media.Image;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +14,8 @@ import com.example.ximena.nomnom.model.Restaurant;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+
+import static com.example.ximena.nomnom.R.drawable.notice;
 
 public class NewsAdapter extends ArrayAdapter<New> implements View.OnClickListener {
 
@@ -29,6 +32,7 @@ public class NewsAdapter extends ArrayAdapter<New> implements View.OnClickListen
     private static class ViewHolder {
         TextView txtName;
         TextView txtType;
+        ImageView imageView;
 
 
     }
@@ -48,6 +52,7 @@ public class NewsAdapter extends ArrayAdapter<New> implements View.OnClickListen
             convertView = inflater.inflate(R.layout.new_item, parent, false);
             viewHolder.txtName = (TextView) convertView.findViewById(R.id.name);
             viewHolder.txtType = (TextView) convertView.findViewById(R.id.type);
+            viewHolder.imageView = (ImageView) convertView.findViewById(R.id.image);
 
 
             result=convertView;
@@ -62,6 +67,8 @@ public class NewsAdapter extends ArrayAdapter<New> implements View.OnClickListen
 
         viewHolder.txtName.setText(dataModel.getTitle());
         viewHolder.txtType.setText(dataModel.getBody());
+        //viewHolder.imageView.setImageDrawable(R.drawable.notice);
+        Picasso.with(mContext).load(R.drawable.notice).into(viewHolder.imageView);
 
         // Return the completed view to render on screen
         return convertView;

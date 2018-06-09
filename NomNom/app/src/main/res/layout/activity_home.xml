@@ -3,9 +3,11 @@
     android:id="@+id/drawerLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@color/common_google_signin_btn_text_dark_default"
         android:orientation="vertical">
 
         <include
@@ -29,22 +31,8 @@
                 android:layout_height="match_parent"
                 android:orientation="vertical">
 
-                <TextView
-                    android:id="@+id/textView"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:text="Bienvenido"
-                    android:textSize="30sp" />
-
-                <TextView
-                    android:id="@+id/textView2"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Noticias"
-                    android:textSize="24sp" />
-
                 <ListView
+                    android:id="@+id/list_news"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent" />
             </LinearLayout>

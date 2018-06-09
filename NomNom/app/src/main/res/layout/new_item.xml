@@ -12,14 +12,18 @@
         android:orientation="horizontal">
 
         <ImageView
-            android:id="@+id/imageView6"
-            android:layout_width="wrap_content"
-            android:layout_height="50dp"
+            android:id="@+id/image"
+            android:layout_width="50dp"
+            android:layout_height="75dp"
+            android:layout_marginBottom="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="10dp"
             android:layout_weight="1"
-            app:srcCompat="@drawable/notice" />
+            app:srcCompat="@drawable/map" />
 
         <LinearLayout
-            android:layout_width="300dp"
+            android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:layout_marginRight="10dp"
             android:layout_weight="1"
@@ -32,7 +36,8 @@
                 android:layout_alignParentTop="true"
                 android:text="Name"
                 android:textAppearance="?android:attr/textAppearanceSmall"
-                android:textColor="@android:color/black" />
+                android:textColor="@android:color/darker_gray"
+                android:textSize="24sp" />
 
             <TextView
                 android:id="@+id/type"
@@ -41,7 +46,7 @@
                 android:layout_below="@+id/name"
                 android:layout_marginTop="5dp"
                 android:text="Type"
-                android:textColor="@android:color/black" />
+                android:textColor="@android:color/darker_gray" />
 
         </LinearLayout>
 
