@@ -128,8 +128,8 @@ public class HerokuService {
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
-                        if(response.has("auth_token")) {
-                            String authToken = response.optString("auth_token");
+                        if(response.has("jwt")) {
+                            String authToken = response.optString("jwt");
                             addHeader("Authorization", authToken);
                         }
 
