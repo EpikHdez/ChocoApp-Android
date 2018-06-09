@@ -31,7 +31,7 @@
                 app:srcCompat="@drawable/nomnom" />
 
             <EditText
-                android:id="@+id/editText2"
+                android:id="@+id/email"
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
                 android:layout_centerInParent="true"
@@ -47,7 +47,7 @@
                 android:textSize="18sp" />
 
             <EditText
-                android:id="@+id/editText3"
+                android:id="@+id/pass"
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
                 android:layout_alignParentBottom="true"
