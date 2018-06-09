@@ -19,7 +19,7 @@ import com.mindorks.placeholderview.PlaceHolderView;
 
 import java.util.HashMap;
 
-public class RestaurantActivity extends AppCompatActivity implements BaseSliderView.OnSliderClickListener, ViewPagerEx.OnPageChangeListener {
+public class  RestaurantActivity extends AppCompatActivity implements BaseSliderView.OnSliderClickListener, ViewPagerEx.OnPageChangeListener {
     private PlaceHolderView mDrawerView;
     private DrawerLayout mDrawer;
     private Toolbar mToolbar;
