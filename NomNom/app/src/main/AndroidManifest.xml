@@ -71,6 +71,9 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
+        <meta-data
+            android:name="CLOUDINARY_URL"
+            android:value="cloudinary://748595732486542:9otU3VDiftLsixb0BlFD2SLR0L4@epikhdez" />
 
         <activity
             android:name=".MapsActivity"
