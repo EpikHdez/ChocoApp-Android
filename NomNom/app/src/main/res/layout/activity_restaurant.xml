@@ -58,32 +58,40 @@
                     app:srcCompat="@drawable/point" />
 
                 <TextView
-                    android:id="@+id/textView4"
+                    android:id="@+id/location"
                     android:layout_width="200dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:text="Ubicación"
                     android:textSize="18sp" />
 
             </LinearLayout>
 
-            <TextView
-                android:id="@+id/name"
-                android:layout_width="200dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:layout_weight="1"
-                android:text="Nombre"
-                android:textSize="18sp" />
 
-
-            <TextView
-                android:id="@+id/type"
-                android:layout_width="200dp"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Tipo"
-                android:textSize="18sp" />
+                android:layout_marginLeft="25dp"
+                android:layout_marginRight="25dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/name"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_weight="1"
+                    android:text="Nombre"
+                    android:textSize="18sp" />
+
+                <TextView
+                    android:id="@+id/type"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_weight="1"
+                    android:text="Tipo"
+                    android:textSize="18sp" />
+            </LinearLayout>
 
 
             <Button

@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.daimajia.slider.library.Animations.DescriptionAnimation;
@@ -15,6 +16,7 @@ import com.daimajia.slider.library.SliderLayout;
 import com.daimajia.slider.library.SliderTypes.BaseSliderView;
 import com.daimajia.slider.library.SliderTypes.TextSliderView;
 import com.daimajia.slider.library.Tricks.ViewPagerEx;
+import com.example.ximena.nomnom.model.Restaurant;
 import com.mindorks.placeholderview.PlaceHolderView;
 
 import java.util.HashMap;
@@ -26,25 +28,25 @@ public class  RestaurantActivity extends AppCompatActivity implements BaseSlider
     private PlaceHolderView mGalleryView;
     SliderLayout sliderLayout;
     HashMap<String,String> Hash_file_maps ;
+    ManagerUser managerUser;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_restaurant);
-
+        managerUser=ManagerUser.getInstance();
+        Restaurant restaurant=managerUser.getCurrentRestaurant();
         mDrawer = (DrawerLayout)findViewById(R.id.drawerLayout);
         mDrawerView = (PlaceHolderView)findViewById(R.id.drawerView);
         mToolbar = (Toolbar)findViewById(R.id.toolbar);
         mGalleryView = (PlaceHolderView)findViewById(R.id.galleryView);
         setupDrawer();
-        Hash_file_maps = new HashMap<String, String>();
-
+        Hash_file_maps = restaurant.getPictures();
+        if(Hash_file_maps.size()==0){
+            Hash_file_maps.put("Android CupCake", "http://androidblog.esy.es/images/cupcake-1.png");
+        }
         sliderLayout = (SliderLayout)findViewById(R.id.slider);
 
-        Hash_file_maps.put("Android CupCake", "http://androidblog.esy.es/images/cupcake-1.png");
-        Hash_file_maps.put("Android Donut", "http://androidblog.esy.es/images/donut-2.png");
-        Hash_file_maps.put("Android Eclair", "http://androidblog.esy.es/images/eclair-3.png");
-        Hash_file_maps.put("Android Froyo", "http://androidblog.esy.es/images/froyo-4.png");
-        Hash_file_maps.put("Android GingerBread", "http://androidblog.esy.es/images/gingerbread-5.png");
+
 
         for(String name : Hash_file_maps.keySet()){
 
@@ -64,6 +66,13 @@ public class  RestaurantActivity extends AppCompatActivity implements BaseSlider
         sliderLayout.setCustomAnimation(new DescriptionAnimation());
         sliderLayout.setDuration(3000);
         sliderLayout.addOnPageChangeListener(this);
+
+        TextView location = findViewById(R.id.location);
+        TextView name= findViewById(R.id.name);
+        TextView type=findViewById(R.id.type);
+        location.setText(restaurant.getLatitude()+", "+restaurant.getLongitude());
+        name.setText("Nombre: "+restaurant.getName());
+        type.setText("Tipo: "+restaurant.getType());
 
     }
     public void openProducts(View view){
