@@ -12,6 +12,10 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -20,24 +24,52 @@ import com.daimajia.slider.library.SliderLayout;
 import com.daimajia.slider.library.SliderTypes.BaseSliderView;
 import com.daimajia.slider.library.SliderTypes.TextSliderView;
 import com.daimajia.slider.library.Tricks.ViewPagerEx;
+import com.example.ximena.nomnom.interfaces.IAPICaller;
+import com.example.ximena.nomnom.services.CloudinaryService;
+import com.example.ximena.nomnom.services.HerokuService;
 import com.mindorks.placeholderview.PlaceHolderView;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 
-public class AddRestaurantActivity extends AppCompatActivity implements BaseSliderView.OnSliderClickListener, ViewPagerEx.OnPageChangeListener {
+public class AddRestaurantActivity extends AppCompatActivity
+        implements BaseSliderView.OnSliderClickListener,
+                   ViewPagerEx.OnPageChangeListener,
+                    IAPICaller {
+    private static final int SELECT_PLACE_TYPES = 100;
+    private static final int SAVE_PLACE = 300;
+    private static final int UPLOAD_IMAGES = 400;
+    private static final String PLACE_TYPES_PATH = "place_category";
+    private static final String SAVE_PLACE_PATH = "place";
+
+    private int imageCount;
 
     private PlaceHolderView mDrawerView;
     private DrawerLayout mDrawer;
     private Toolbar mToolbar;
     private PlaceHolderView mGalleryView;
+    private Spinner placeTypesSpinner;
+    private EditText placeNameEditText;
+
+    private LinkedList<Integer> placeTypesIds;
+    private int selectedPlaceTypeId;
+    private String placeName;
+    private LinkedList<Uri> picturesUris;
+    private JSONArray picturesUrls;
+
     SliderLayout sliderLayout;
     HashMap<String,String> Hash_file_maps ;
     ManagerUser managerUser;
     String imageEncoded;
     List<String> imagesEncodedList;
     private static final int OPEN_IMAGE_CODE = 200;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,6 +79,9 @@ public class AddRestaurantActivity extends AppCompatActivity implements BaseSlid
         mDrawerView = (PlaceHolderView)findViewById(R.id.drawerView);
         mToolbar = (Toolbar)findViewById(R.id.toolbar);
         mGalleryView = (PlaceHolderView)findViewById(R.id.galleryView);
+        placeTypesSpinner = findViewById(R.id.APPlaceTypesSpinner);
+        placeNameEditText = findViewById(R.id.APNameEditText);
+
         setupDrawer();
         Hash_file_maps = new HashMap<String, String>();
 
@@ -78,9 +113,10 @@ public class AddRestaurantActivity extends AppCompatActivity implements BaseSlid
         sliderLayout.addOnPageChangeListener(this);
 
         TextView txtposition=findViewById(R.id.position);
-        txtposition.setText(managerUser.getCurrentLatitud()+","+managerUser.getCurrentLongitude());
+        txtposition.setText(managerUser.getCurrentLatitud()+", "+managerUser.getCurrentLongitude());
 
     }
+
     private void setupDrawer(){
         mDrawerView
                 .addView(new DrawerHeader())
@@ -106,6 +142,13 @@ public class AddRestaurantActivity extends AppCompatActivity implements BaseSlid
 
         mDrawer.addDrawerListener(drawerToggle);
         drawerToggle.syncState();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        HerokuService.get(PLACE_TYPES_PATH, SELECT_PLACE_TYPES, this);
     }
 
     @Override
@@ -156,30 +199,26 @@ public class AddRestaurantActivity extends AppCompatActivity implements BaseSlid
 
                 String[] filePathColumn = { MediaStore.Images.Media.DATA };
                 imagesEncodedList = new ArrayList<String>();
+                Hash_file_maps = new HashMap<>();
+                sliderLayout.removeAllSliders();
+                picturesUris = new LinkedList<>();
+
                 if(data.getData()!=null){
 
                     Uri mImageUri=data.getData();
+                    picturesUris.add(mImageUri);
 
-                    // Get the cursor
-                    Cursor cursor = getContentResolver().query(mImageUri,
-                            filePathColumn, null, null, null);
-                    // Move to first row
-                    cursor.moveToFirst();
-
-                    int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-                    imageEncoded  = cursor.getString(columnIndex);
-                    cursor.close();
-
+                    Hash_file_maps.put("imagen0", mImageUri.toString());
                 } else {
                     if (data.getClipData() != null) {
                         ClipData mClipData = data.getClipData();
                         ArrayList<Uri> mArrayUri = new ArrayList<Uri>();
-                        Hash_file_maps=new HashMap<>();
                         sliderLayout.removeAllSliders();
                         for (int i = 0; i < mClipData.getItemCount(); i++) {
 
                             ClipData.Item item = mClipData.getItemAt(i);
                             Uri uri = item.getUri();
+                            picturesUris.add(uri);
                             mArrayUri.add(uri);
                             // Get the cursor
                             Cursor cursor = getContentResolver().query(uri, filePathColumn, null, null, null);
@@ -194,27 +233,27 @@ public class AddRestaurantActivity extends AppCompatActivity implements BaseSlid
 
 
                         }
-                        for(String name : Hash_file_maps.keySet()){
-
-                            TextSliderView textSliderView = new TextSliderView(this);
-                            textSliderView
-                                    .description(name)
-                                    .image(Hash_file_maps.get(name))
-                                    .setScaleType(BaseSliderView.ScaleType.Fit)
-                                    .setOnSliderClickListener(this);
-                            textSliderView.bundle(new Bundle());
-                            textSliderView.getBundle()
-                                    .putString("extra",name);
-                            sliderLayout.addSlider(textSliderView);
-                        }
-                        sliderLayout.setPresetTransformer(SliderLayout.Transformer.Accordion);
-                        sliderLayout.setPresetIndicator(SliderLayout.PresetIndicators.Center_Bottom);
-                        sliderLayout.setCustomAnimation(new DescriptionAnimation());
-                        sliderLayout.setDuration(3000);
-                        sliderLayout.addOnPageChangeListener(this);
-                        Log.v("LOG_TAG", "Selected Images" + mArrayUri.size());
                     }
                 }
+
+                for(String name : Hash_file_maps.keySet()){
+
+                    TextSliderView textSliderView = new TextSliderView(this);
+                    textSliderView
+                            .description(name)
+                            .image(Hash_file_maps.get(name))
+                            .setScaleType(BaseSliderView.ScaleType.Fit)
+                            .setOnSliderClickListener(this);
+                    textSliderView.bundle(new Bundle());
+                    textSliderView.getBundle()
+                            .putString("extra",name);
+                    sliderLayout.addSlider(textSliderView);
+                }
+                sliderLayout.setPresetTransformer(SliderLayout.Transformer.Accordion);
+                sliderLayout.setPresetIndicator(SliderLayout.PresetIndicators.Center_Bottom);
+                sliderLayout.setCustomAnimation(new DescriptionAnimation());
+                sliderLayout.setDuration(3000);
+                sliderLayout.addOnPageChangeListener(this);
             } else {
                 Toast.makeText(this, "You haven't picked Image",
                         Toast.LENGTH_LONG).show();
@@ -227,4 +266,108 @@ public class AddRestaurantActivity extends AppCompatActivity implements BaseSlid
         super.onActivityResult(requestCode, resultCode, data);
     }
 
+    public void onAPBtnSaveOnClick(View view) {
+        placeName = placeNameEditText.getText().toString();
+
+        if(placeName.isEmpty()) {
+            Toast.makeText(this, "Llene todos los campos", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        picturesUrls = new JSONArray();
+        imageCount = picturesUris.size();
+
+        for(Uri uri : picturesUris) {
+            new CloudinaryService(UPLOAD_IMAGES, this).execute(uri);
+        }
+    }
+
+    private void populatePlaceTypes(JSONObject response) {
+        JSONArray arrayPlaceTypes = response.optJSONArray("place_categories");
+        placeTypesIds = new LinkedList<>();
+        LinkedList<String> localPlaceTypes = new LinkedList<>();
+        JSONObject item;
+
+        for(int index = 0; index < arrayPlaceTypes.length(); index++) {
+            item = arrayPlaceTypes.optJSONObject(index);
+            localPlaceTypes.add(item.optString("name"));
+            placeTypesIds.add(item.optInt("id"));
+        }
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, localPlaceTypes);
+
+        placeTypesSpinner.setAdapter(adapter);
+        placeTypesSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                selectedPlaceTypeId = placeTypesIds.get(position);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+    }
+
+    public void getPicturesUrls(JSONObject response) {
+        JSONArray responseUrls = response.optJSONArray("pictures_urls");
+
+        for(int index = 0; index < responseUrls.length(); index++) {
+            picturesUrls.put(responseUrls.optString(index));
+        }
+    }
+
+    private void savePlace() {
+        JSONObject data = new JSONObject();
+        JSONObject address = new JSONObject();
+
+        try {
+            address.put("address", "asgfdfhgdgffsdsa");
+            address.put("latitude", managerUser.getCurrentLatitud());
+            address.put("longitude", managerUser.getCurrentLongitude());
+            address.put("address_type", 1);
+
+            data.put("address", address);
+            data.put("name", placeName);
+            data.put("pictures", picturesUrls);
+            data.put("place_types", selectedPlaceTypeId);
+
+            HerokuService.post(SAVE_PLACE_PATH, data, SAVE_PLACE, this);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    private void openHome() {
+        Intent intent = new Intent(this, HomeActivity.class);
+        startActivity(intent);
+    }
+
+    @Override
+    public void onSuccess(int requestCode, JSONObject response) {
+        switch (requestCode) {
+            case SELECT_PLACE_TYPES:
+                populatePlaceTypes(response);
+                break;
+
+            case UPLOAD_IMAGES:
+                if (imageCount-- > 0) {
+                    getPicturesUrls(response);
+                    return;
+                }
+
+                savePlace();
+                break;
+
+            case SAVE_PLACE:
+                openHome();
+
+        }
+    }
+
+    @Override
+    public void onFailure(int requestCode, String error) {
+
+    }
 }
