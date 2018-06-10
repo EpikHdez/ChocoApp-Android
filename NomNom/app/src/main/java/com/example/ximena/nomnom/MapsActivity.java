@@ -9,6 +9,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Build;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
@@ -19,8 +20,11 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 
+import com.cloudinary.android.Logger;
 import com.example.ximena.nomnom.interfaces.IAPICaller;
 import com.example.ximena.nomnom.services.HerokuService;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -40,6 +44,9 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, IAPICaller {
+    public static final int LOCATION_UPDATE_MIN_DISTANCE = 10;
+    public static final int LOCATION_UPDATE_MIN_TIME = 5000;
+
     private PlaceHolderView mDrawerView;
     private DrawerLayout mDrawer;
     private Toolbar mToolbar;
@@ -49,10 +56,42 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     LocationManager locationManager;
     LocationListener locationListener;
     ArrayList<MarkerOptions> markers;
+    private Location loc;
     int flag_map = 0;
     private static final int NEARBY_USER_CODE = 400;
     private static final String RELATIVE_API = "nearby";
     int flag = NEARBY_USER_CODE;
+
+    private LocationListener mLocationListener = new LocationListener() {
+        @Override
+        public void onLocationChanged(Location location) {
+            if (location != null) {
+                Log.d("asdfasdfasdS", String.format("%f, %f", location.getLatitude(), location.getLongitude()));
+                drawMarker(location);
+                mLocationManager.removeUpdates(mLocationListener);
+                loc = location;
+            } else {
+                Log.d("asdfasdff", "Location is null");
+            }
+        }
+
+        @Override
+        public void onStatusChanged(String s, int i, Bundle bundle) {
+
+        }
+
+        @Override
+        public void onProviderEnabled(String s) {
+
+        }
+
+        @Override
+        public void onProviderDisabled(String s) {
+
+        }
+    };
+
+    private LocationManager mLocationManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,17 +110,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-    }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
-        if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
-            }
-        }
+        mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        initMap();
+        getCurrentLocation();
     }
 
     private void setupDrawer() {
@@ -122,46 +154,150 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      * installed Google Play services and returned to the app.
      */
 
+    @SuppressLint("MissingPermission")
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        mMap = googleMap;
+
+        if (flag_map==0) {
+            restaurantsMap();
+
+        }else{
+            profileMap();
+        }
+    }
+
     public void restaurantsMap() {
-        locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+        markerAddRestaurant();
+        putPositions();
+        onMapClickAddRestaurant();
+    }
 
-        locationListener = new LocationListener() {
-            @Override
-            public void onLocationChanged(Location location) {
+    public void profileMap() {
+        returnToProfile(mMap);
+        changeMarkerPosition(mMap);
+    }
 
-                mMap.clear();
-                //getNearby(Float.valueOf(String.valueOf(location.getLatitude())), Float.valueOf(String.valueOf(location.getLongitude())), 10.0f);
-                putPositions(location);
-                mMap.animateCamera(CameraUpdateFactory.zoomTo(17.0f));
+    private void initMap() {
+        int googlePlayStatus = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
+        if (googlePlayStatus != ConnectionResult.SUCCESS) {
+            GooglePlayServicesUtil.getErrorDialog(googlePlayStatus, this, -1).show();
+            finish();
+        } else {
+            if (mMap != null) {
+                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    // TODO: Consider calling
+                    //    ActivityCompat#requestPermissions
+                    // here to request the missing permissions, and then overriding
+                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                    //                                          int[] grantResults)
+                    // to handle the case where the user grants the permission. See the documentation
+                    // for ActivityCompat#requestPermissions for more details.
+                    return;
+                }
+                mMap.setMyLocationEnabled(true);
+                mMap.getUiSettings().setMyLocationButtonEnabled(true);
+                mMap.getUiSettings().setAllGesturesEnabled(true);
+            }
+        }
+    }
 
+    private void getCurrentLocation() {
+        boolean isGPSEnabled = mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+        boolean isNetworkEnabled = mLocationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 
-
-
+        Location location = null;
+        if (!(isGPSEnabled || isNetworkEnabled))
+            Toast.makeText(this, "asdfajdkgadkfg", Toast.LENGTH_SHORT).show();
+        else {
+            if (isNetworkEnabled) {
+                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    // TODO: Consider calling
+                    //    ActivityCompat#requestPermissions
+                    // here to request the missing permissions, and then overriding
+                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                    //                                          int[] grantResults)
+                    // to handle the case where the user grants the permission. See the documentation
+                    // for ActivityCompat#requestPermissions for more details.
+                    return;
+                }
+                mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,
+                        LOCATION_UPDATE_MIN_TIME, LOCATION_UPDATE_MIN_DISTANCE, mLocationListener);
+                location = mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
             }
 
-            @Override
-            public void onStatusChanged(String provider, int status, Bundle extras) {
-
-
+            if (isGPSEnabled) {
+                mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
+                        LOCATION_UPDATE_MIN_TIME, LOCATION_UPDATE_MIN_DISTANCE, mLocationListener);
+                location = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
             }
+        }
+        if (location != null) {
+            Log.d("asjfhajkdgsdfgs",String.format("getCurrentLocation(%f, %f)", location.getLatitude(),
+                    location.getLongitude()));
+            drawMarker(location);
+        }
+    }
 
-            @Override
-            public void onProviderEnabled(String provider) {
-
-            }
-
-            @Override
-            public void onProviderDisabled(String provider) {
-
-            }
-
-
-        };
-
-        activatePermissionsRestaurant();
-
+    private void drawMarker(Location location) {
+        if (mMap != null) {
+            mMap.clear();
+            LatLng gps = new LatLng(location.getLatitude(), location.getLongitude());
+            mMap.addMarker(new MarkerOptions()
+                    .position(gps)
+                    .title("Current Position"));
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(gps, 12));
+        }
 
     }
+
+    public void returnToProfile( GoogleMap map){
+        map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                manager.setTempLatitud(Float.valueOf(String.valueOf(marker.getPosition().latitude)));
+                manager.setTempLongitude(Float.valueOf(String.valueOf(marker.getPosition().longitude)));
+                finish();
+
+                return false;
+            }
+        });
+
+    }
+
+    public void changeMarkerPosition(GoogleMap map){
+        map.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+
+            @Override
+            public void onMapClick(LatLng point) {
+                mMap.clear();
+                MarkerOptions marker = new MarkerOptions().position(
+                        new LatLng(point.latitude, point.longitude)).title("New Marker");
+                mMap.addMarker(marker);
+            }
+        });
+    }
+
+    public void putPositions(){
+        for (MarkerOptions m : markers) {
+            mMap.addMarker(m);
+        }
+    }
+
+    public void markerAddRestaurant(){
+        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+
+                manager.setCurrentLatitud(Float.valueOf(String.valueOf(marker.getPosition().latitude)));
+                manager.setCurrentLongitude(Float.valueOf(String.valueOf(marker.getPosition().longitude)));
+                //finish();
+                openAddRestaurant();
+                return false;
+            }
+        });
+    }
+
     public void onMapClickAddRestaurant(){
         mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
 
@@ -180,167 +316,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
     }
-    public void markerAddRestaurant(){
-        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-            @Override
-            public boolean onMarkerClick(Marker marker) {
-
-                //finish();
-                openAddRestaurant();
-                return false;
-            }
-        });
-    }
-    public void putPositions(Location location){
-        LatLng userLocation = new LatLng(location.getLatitude(), location.getLongitude());
-
-
-        mMap.addMarker(new MarkerOptions().position(userLocation).title("Marker"));
-        for (MarkerOptions m : markers) {
-            mMap.addMarker(m);
-        }
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(userLocation));
-
-    }
-    public void activatePermissionsRestaurant(){
-        if (Build.VERSION.SDK_INT < 23) {
-
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                // TODO: Consider calling
-                //    ActivityCompat#requestPermissions
-                // here to request the missing permissions, and then overriding
-                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                //                                          int[] grantResults)
-                // to handle the case where the user grants the permission. See the documentation
-                // for ActivityCompat#requestPermissions for more details.
-                return;
-            }
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
-
-        } else if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
-
-            Location lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-
-
-
-            mMap.clear();
-            getNearby(Float.valueOf(String.valueOf(lastKnownLocation.getLatitude())), Float.valueOf(String.valueOf(lastKnownLocation.getLongitude())), 10.0f);
-            putPositions(lastKnownLocation);
-            mMap.animateCamera(CameraUpdateFactory.zoomTo(17.0f));
-
-
-            markerAddRestaurant();
-            onMapClickAddRestaurant();
-
-        } else {
-
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
-
-        }
-    }
-    public void profileMap() {
-        locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-        locationListener = new LocationListener() {
-            @Override
-            public void onLocationChanged(Location location) {
-                LatLng userLocation = new LatLng(location.getLatitude(), location.getLongitude());
-                mMap.moveCamera(CameraUpdateFactory.newLatLng(userLocation));
-                returnToProfile( mMap);
-                changeMarkerPosition(mMap);
-            }
-            @Override
-            public void onStatusChanged(String provider, int status, Bundle extras) {
-            }
-
-            @Override
-            public void onProviderEnabled(String provider) {
-            }
-
-            @Override
-            public void onProviderDisabled(String provider) {
-            }
-        };
-        activatePermissionsProfile();
-    }
-
-    public void activatePermissionsProfile(){
-
-        if (Build.VERSION.SDK_INT < 23) {
-
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                // TODO: Consider calling
-                //    ActivityCompat#requestPermissions
-                // here to request the missing permissions, and then overriding
-                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                //                                          int[] grantResults)
-                // to handle the case where the user grants the permission. See the documentation
-                // for ActivityCompat#requestPermissions for more details.
-                return;
-            }
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
-
-        } else if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
-            Location lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-            LatLng userLocation = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
-            mMap.moveCamera(CameraUpdateFactory.newLatLng(userLocation));
-            mMap.animateCamera(CameraUpdateFactory.zoomTo(17.0f));
-            returnToProfile( mMap);
-            changeMarkerPosition(mMap);
-        } else {
-
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
-
-        }
-    }
-
-    public void changeMarkerPosition(GoogleMap map){
-        map.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
-
-            @Override
-            public void onMapClick(LatLng point) {
-                mMap.clear();
-                MarkerOptions marker = new MarkerOptions().position(
-                        new LatLng(point.latitude, point.longitude)).title("New Marker");
-                mMap.addMarker(marker);
-
-
-
-            }
-        });
-    }
-
-    public void returnToProfile( GoogleMap map){
-        map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-            @Override
-            public boolean onMarkerClick(Marker marker) {
-                manager.setTempLatitud(Float.valueOf(String.valueOf(marker.getPosition().latitude)));
-                manager.setTempLongitude(Float.valueOf(String.valueOf(marker.getPosition().longitude)));
-                finish();
-
-                return false;
-            }
-        });
-
-    }
-
-
-    @SuppressLint("MissingPermission")
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
-        mMap = googleMap;
-
-        if (flag_map==0) {
-            restaurantsMap();
-
-        }else{
-            profileMap();
-        }
-
-
-    }
 
     public void openAddRestaurant(){
         Intent activity = new Intent(this, AddRestaurantActivity.class);
@@ -350,36 +325,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void onSuccess(int requestCode, JSONObject response) {
-        switch (flag) {
-            case NEARBY_USER_CODE:
-                Log.d("RESPONSE MAP", response.toString());
-                break;
-        }
+
     }
 
     @Override
     public void onFailure(int requestCode, String error) {
 
     }
-
-    public void getNearby(float latitude, float longitude,float radius) {
-        JSONObject nearby = new JSONObject();
-
-
-
-
-        try {
-
-            nearby.put("latitude", latitude);
-            nearby.put("longitude", longitude);
-            nearby.put("radius", radius);
-
-
-            HerokuService.post(RELATIVE_API, nearby, NEARBY_USER_CODE, this);
-
-        }catch (Exception e){
-
-        }
-    }
-
 }
