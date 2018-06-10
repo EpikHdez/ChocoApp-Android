@@ -43,6 +43,7 @@
                     android:layout_height="200dp"
                     android:layout_marginTop="10dp"
                     android:layout_weight="1"
+                    android:onClick="onViewClicked"
                     app:srcCompat="@drawable/prof1" />
 
                 <LinearLayout
@@ -126,7 +127,7 @@
                 </LinearLayout>
 
                 <Button
-                    android:id="@+id/button3"
+                    android:id="@+id/change"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="10dp"
@@ -135,6 +136,7 @@
                     android:layout_marginTop="10dp"
                     android:layout_weight="1"
                     android:background="@drawable/button"
+                    android:onClick="onViewClicked"
                     android:text="Cambiar"
                     android:textColor="@color/common_google_signin_btn_text_dark_default" />
             </LinearLayout>
