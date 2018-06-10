@@ -57,7 +57,7 @@
                     app:srcCompat="@drawable/point" />
 
                 <TextView
-                    android:id="@+id/textView4"
+                    android:id="@+id/position"
                     android:layout_width="200dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"

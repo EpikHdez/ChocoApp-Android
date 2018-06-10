@@ -16,8 +16,11 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 
+import com.example.ximena.nomnom.interfaces.IAPICaller;
+import com.example.ximena.nomnom.services.HerokuService;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -27,27 +30,40 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.mindorks.placeholderview.PlaceHolderView;
 import android.Manifest;
+import android.widget.TextView;
 import android.widget.Toast;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
+import org.json.JSONObject;
+
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, IAPICaller {
     private PlaceHolderView mDrawerView;
     private DrawerLayout mDrawer;
     private Toolbar mToolbar;
     private PlaceHolderView mGalleryView;
-
+    ManagerUser manager;
     private GoogleMap mMap;
     LocationManager locationManager;
     LocationListener locationListener;
+    ArrayList<MarkerOptions> markers;
 
+    private static final int NEARBY_USER_CODE = 400;
+
+    private static final String RELATIVE_API = "nearby";
+    int flag=NEARBY_USER_CODE;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+        manager=ManagerUser.getInstance();
         mDrawer = (DrawerLayout)findViewById(R.id.drawerLayout);
         mDrawerView = (PlaceHolderView)findViewById(R.id.drawerView);
         mToolbar = (Toolbar)findViewById(R.id.toolbar);
         mGalleryView = (PlaceHolderView)findViewById(R.id.galleryView);
+        markers=new ArrayList<MarkerOptions>();
         setupDrawer();
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -116,10 +132,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 LatLng userLocation = new LatLng(location.getLatitude(), location.getLongitude());
 
                 mMap.addMarker(new MarkerOptions().position(userLocation).title("Marker"));
-
+                for (MarkerOptions m:markers){
+                    mMap.addMarker(m);
+                }
                 mMap.moveCamera(CameraUpdateFactory.newLatLng(userLocation));
 
-                Toast.makeText(MapsActivity.this, userLocation.toString(), Toast.LENGTH_SHORT).show();
+                //Toast.makeText(MapsActivity.this, userLocation.toString(), Toast.LENGTH_SHORT).show();
+                getNearby(Float.valueOf(String.valueOf(location.getLatitude())),Float.valueOf(String.valueOf(location.getLongitude())),10.0f);
+
             }
 
             @Override
@@ -159,15 +179,34 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             mMap.moveCamera(CameraUpdateFactory.newLatLng(userLocation));
             mMap.animateCamera( CameraUpdateFactory.zoomTo( 17.0f ) );
+            getNearby(Float.valueOf(String.valueOf(lastKnownLocation.getLatitude())),Float.valueOf(String.valueOf(lastKnownLocation.getLongitude())),10.0f);
 
-            Toast.makeText(MapsActivity.this, userLocation.toString(), Toast.LENGTH_SHORT).show();
+            //Toast.makeText(MapsActivity.this, userLocation.toString(), Toast.LENGTH_SHORT).show();
             mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
                 @Override
                 public boolean onMarkerClick(Marker marker) {
                     Toast.makeText(MapsActivity.this, "holi", Toast.LENGTH_SHORT).show();
-                    finish();
+                    //finish();
+                    manager.setCurrentLatitud(Float.valueOf(String.valueOf(marker.getPosition().latitude)));
+                    manager.setCurrentLongitude(Float.valueOf(String.valueOf(marker.getPosition().longitude)));
                     openAddRestaurant();
                     return false;
+                }
+            });
+            mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+
+                @Override
+                public void onMapClick(LatLng point) {
+
+                    MarkerOptions marker = new MarkerOptions().position(
+                            new LatLng(point.latitude, point.longitude)).title("New Marker");
+                    mMap.addMarker(marker);
+                    markers.add(marker);
+                    manager.setCurrentLatitud(Float.valueOf(String.valueOf(point.latitude)));
+                    manager.setCurrentLongitude(Float.valueOf(String.valueOf(point.longitude)));
+                    openAddRestaurant();
+
+                    System.out.println(point.latitude+"---"+ point.longitude);
                 }
             });
 
@@ -178,9 +217,45 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
 
     }
+
     public void openAddRestaurant(){
         Intent activity = new Intent(this, AddRestaurantActivity.class);
         startActivity(activity);
 
     }
+
+    @Override
+    public void onSuccess(int requestCode, JSONObject response) {
+        switch (flag) {
+            case NEARBY_USER_CODE:
+                Log.d("RESPONSE MAP", response.toString());
+                break;
+        }
+    }
+
+    @Override
+    public void onFailure(int requestCode, Object error) {
+
+    }
+
+    public void getNearby(float latitude, float longitude,float radius) {
+        JSONObject nearby = new JSONObject();
+
+
+
+
+        try {
+
+            nearby.put("latitude", latitude);
+            nearby.put("longitude", longitude);
+            nearby.put("radius", radius);
+
+
+            HerokuService.post(RELATIVE_API, nearby, NEARBY_USER_CODE, this);
+
+        }catch (Exception e){
+
+        }
+    }
+
 }

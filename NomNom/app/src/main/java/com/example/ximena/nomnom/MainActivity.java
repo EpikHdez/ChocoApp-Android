@@ -201,7 +201,7 @@ public class MainActivity extends AppCompatActivity implements IAPICaller {
                 }
                 break;
             case 1:
-                Log.d("FACEBOOk","NO");
+
                 JSONObject user = new JSONObject();
 
                 try {
@@ -225,7 +225,7 @@ public class MainActivity extends AppCompatActivity implements IAPICaller {
             case 0:
                 break;
             case 1:
-                Log.d("FACEBOOk","SI");
+
                 JSONObject user = new JSONObject();
 
 
@@ -236,4 +236,5 @@ public class MainActivity extends AppCompatActivity implements IAPICaller {
         }
 
     }
+
 }
