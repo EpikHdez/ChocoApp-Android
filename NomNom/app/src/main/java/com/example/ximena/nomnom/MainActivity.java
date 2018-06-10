@@ -1,6 +1,7 @@
 package com.example.ximena.nomnom;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -50,7 +51,20 @@ public class MainActivity extends AppCompatActivity implements IAPICaller {
         loginButton.setReadPermissions(Arrays.asList(
                "public_profile", "email", "user_birthday", "user_friends"));
         callbackManager = CallbackManager.Factory.create();
-
+        SharedPreferences pref = getApplicationContext().getSharedPreferences("MyPref", 0); // 0 - for private mode
+        String email=pref.getString("email", null); // getting String
+        String pass=pref.getString("pass", null); // getting String
+        if(email!=null && pass!=null){
+            try{
+                Log.d("email",email);
+                Log.d("pass",pass);
+                JSONObject test=new JSONObject();
+                test.put("email", email);
+                test.put("password", pass);
+                login(test);
+            }
+            catch (Exception e){}
+        }
         loginButton.registerCallback(callbackManager,
                 new FacebookCallback<LoginResult>() {
                     @Override
@@ -136,9 +150,17 @@ public class MainActivity extends AppCompatActivity implements IAPICaller {
 
     }
     public void login(JSONObject user){
-        Log.d("holi","Si lo hice");
-        HerokuService.post(RELATIVE_API, user, LOGIN_USER_CODE, this);
-        Log.d("holi","Si lo hice");
+        try {
+            SharedPreferences pref = getApplicationContext().getSharedPreferences("MyPref", 0); // 0 - for private mode
+            SharedPreferences.Editor editor = pref.edit();
+            String email = user.getString("email");
+            String pass = user.getString("password");
+            editor.putString("email", email); // Storing string
+            editor.putString("pass", pass); // Storing string
+            editor.commit(); // commit changes
+            HerokuService.post(RELATIVE_API, user, LOGIN_USER_CODE, this);
+        }catch (Exception e){}
+
     }
     public void facebookLogin(View view){
 
@@ -186,6 +208,7 @@ public class MainActivity extends AppCompatActivity implements IAPICaller {
         switch (flag) {
             case 0:
                 Log.d("RESPONSE", String.valueOf(response));
+                finish();
                 openHomenotView();
                 try {
                     JSONObject user = (JSONObject) response.get("user");

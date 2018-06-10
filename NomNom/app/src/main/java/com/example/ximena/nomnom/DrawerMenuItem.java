@@ -3,10 +3,16 @@ package com.example.ximena.nomnom;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.facebook.AccessToken;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
+import com.facebook.HttpMethod;
+import com.facebook.login.LoginManager;
 import com.mindorks.placeholderview.annotations.Click;
 import com.mindorks.placeholderview.annotations.Layout;
 import com.mindorks.placeholderview.annotations.Resolve;
@@ -150,7 +156,12 @@ public class DrawerMenuItem {
                 activity = new Intent(mContext, MainActivity.class);
                 activity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 mContext.startActivity(activity);
+                SharedPreferences pref = mContext.getSharedPreferences("MyPref", 0); // 0 - for private mode
+                SharedPreferences.Editor editor = pref.edit();
+                editor.clear();
+                editor.commit(); // commit changes
                 Log.d("Cambio","Logout");
+                disconnectFromFacebook();
                 if(mCallBack != null)mCallBack.onLogoutMenuSelected();
                 break;
         }
@@ -169,6 +180,22 @@ public class DrawerMenuItem {
         void onSettingsMenuSelected();
         void onTermsMenuSelected();
         void onLogoutMenuSelected();
+    }
+    public void disconnectFromFacebook() {
+
+        if (AccessToken.getCurrentAccessToken() == null) {
+            return; // already logged out
+        }
+
+        new GraphRequest(AccessToken.getCurrentAccessToken(), "/me/permissions/", null, HttpMethod.DELETE, new GraphRequest
+                .Callback() {
+            @Override
+            public void onCompleted(GraphResponse graphResponse) {
+
+                LoginManager.getInstance().logOut();
+
+            }
+        }).executeAsync();
     }
 }
 
