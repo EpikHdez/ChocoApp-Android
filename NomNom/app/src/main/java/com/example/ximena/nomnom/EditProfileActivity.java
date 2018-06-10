@@ -34,6 +34,7 @@ public class EditProfileActivity extends AppCompatActivity implements IAPICaller
     private PlaceHolderView mGalleryView;
     private static final int UPLOAD_IMAGE_CODE = 100;
     private static final int OPEN_IMAGE_CODE = 200;
+    private static final int UPDATE_ADDRESS_USER_CODE = 300;
     private static final int ADDRESS_USER_CODE = 500;
     private static final int ADD_ADDRESS_USER_CODE = 600;
     private static final int CHANGE_USER_CODE = 700;
@@ -43,6 +44,8 @@ public class EditProfileActivity extends AppCompatActivity implements IAPICaller
     int flag_activity;
     private static final String RELATIVE_API = "my/user_address";
     private static final String RELATIVE_API1 = "user/";
+    private static final String RELATIVE_API2 ="my/user_address/";
+    boolean addresses_null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -115,6 +118,7 @@ public class EditProfileActivity extends AppCompatActivity implements IAPICaller
                 return;
         }
     }
+
     private void onRImageViewClicked() {
         Intent intent = new Intent();
         // Show only images, no videos or anything else
@@ -123,6 +127,7 @@ public class EditProfileActivity extends AppCompatActivity implements IAPICaller
         // Always show the chooser (if there are multiple options available)
         startActivityForResult(Intent.createChooser(intent, "Select Picture"), OPEN_IMAGE_CODE);
     }
+
     private void onRbtnChangeClicked() {
         TextView txtname = findViewById(R.id.name);
         TextView txtemail = findViewById(R.id.email);
@@ -148,6 +153,8 @@ public class EditProfileActivity extends AppCompatActivity implements IAPICaller
         progressDialog.cancel();
     }
     public void uploadUser(JSONArray images){
+        Log.d("IMAGENES", String.valueOf(images));
+
         if(images==null){
             JSONObject user = new JSONObject();
             TextView txtname = findViewById(R.id.name);
@@ -162,9 +169,9 @@ public class EditProfileActivity extends AppCompatActivity implements IAPICaller
                 user.put("last_name", name[1]);
                 user.put("email", email);
 
-                user.put("picture", pictureUri.toString());
+                user.put("picture", managerUser.getPicture());
 
-                HerokuService.put(RELATIVE_API1+managerUser.getIdUser(), user, CHANGE_USER_CODE, this);
+                HerokuService.put(RELATIVE_API1, user, CHANGE_USER_CODE, this);
                 //HerokuService.post(RELATIVE_API, user, ADD_ADDRESS_USER_CODE, this);
             }catch(Exception e){
 
@@ -179,12 +186,18 @@ public class EditProfileActivity extends AppCompatActivity implements IAPICaller
             ImageView imageView = findViewById(R.id.image);
             String[] name=txtname.getText().toString().split(" ");
             String email=txtemail.getText().toString();
+            String image= null;
+            try {
+                image = images.get(0).toString();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
             try{
             user.put("name", name[0]);
             user.put("last_name", name[1]);
             user.put("email", email);
 
-            user.put("picture", managerUser.getPicture());
+            user.put("picture",image);
 
             HerokuService.put(RELATIVE_API1, user, CHANGE_USER_CODE, this);
             }catch(Exception e){}
@@ -192,9 +205,14 @@ public class EditProfileActivity extends AppCompatActivity implements IAPICaller
 
         }
 
+
     }
     @Override
     public void onSuccess(int requestCode, JSONObject response) {
+        TextView txtname = findViewById(R.id.name);
+        TextView txtemail = findViewById(R.id.email);
+        TextView txthome = findViewById(R.id.home);
+        TextView txtjob = findViewById(R.id.job);
         try {
             switch (requestCode) {
                 case UPLOAD_IMAGE_CODE:
@@ -204,25 +222,69 @@ public class EditProfileActivity extends AppCompatActivity implements IAPICaller
                 case ADDRESS_USER_CODE:
 
                     Log.d("response", response.toString());
+
                     JSONArray addresses = response.getJSONArray("addresses");
-                    TextView txtname = findViewById(R.id.name);
-                    TextView txtemail = findViewById(R.id.email);
-                    TextView txthome = findViewById(R.id.home);
-                    TextView txtjob = findViewById(R.id.job);
+
                     ImageView imageView = findViewById(R.id.image);
 
                     txtname.setText(managerUser.getName() + " " + managerUser.getLastname());
                     txtemail.setText(managerUser.getEmail());
                     Picasso.with(this).load(managerUser.getPicture()).into(imageView);
                     if(addresses.length()==0) {
-                        txthome.setText("No ha insertado su dirección.");
-                        txtjob.setText("No ha insertado su dirección.");
+                        addresses_null=true;
+                        txthome.setText("Casa:0,0");
+                        txtjob.setText("Trabajo:0,0");
+                    }else{
+                        addresses_null=false;
+                        for(int i=0;i<addresses.length();i++){
+                            JSONObject jsonObject=addresses.getJSONObject(i);
+                            if(jsonObject.getInt("address_type_id")==1){
+
+                                double longitude=jsonObject.getDouble("longitude");
+                                double latitude=jsonObject.getDouble("latitude");
+                                txtjob.setText("Trabajo:"+latitude+","+longitude);
+
+                            }else if(jsonObject.getInt("address_type_id")==2){
+                                double longitude=jsonObject.getDouble("longitude");
+                                double latitude=jsonObject.getDouble("latitude");
+                                txthome.setText("Casa:"+latitude+","+longitude);
+                            }
+
+                        }
                     }
                     break;
 
                 case CHANGE_USER_CODE:
+                    JSONObject job = new JSONObject();
+
+                    String[] shome=txthome.getText().toString().split(":")[1].split(",");
+
+                    String[] sjob=txtjob.getText().toString().split(":")[1].split(",");
+
+                    job.put("longitude", Float.parseFloat(sjob[0]));
+                    job.put("latitude", Float.parseFloat(sjob[1]));
+                    job.put("address_type", 1);
+                    JSONObject house = new JSONObject();
+                    Log.d("response", response.toString());
+                    house.put("latitude", Float.parseFloat(shome[0]));
+                    house.put("logitude", Float.parseFloat(shome[1]));
+                    house.put("address_type", 2);
+
+                    if(addresses_null) {
+                        HerokuService.post(RELATIVE_API, job, ADD_ADDRESS_USER_CODE, this);
+                        HerokuService.post(RELATIVE_API, house, ADD_ADDRESS_USER_CODE, this);
+                    }else{
+                        HerokuService.put(RELATIVE_API2+1, job, UPDATE_ADDRESS_USER_CODE, this);
+                        HerokuService.put(RELATIVE_API2+2, house, UPDATE_ADDRESS_USER_CODE, this);
+                    }
+
                     break;
                 case ADD_ADDRESS_USER_CODE:
+                    Log.d("response", response.toString());
+                    break;
+
+                case UPDATE_ADDRESS_USER_CODE:
+                    Log.d("response", response.toString());
                     break;
                 default:
                     break;
@@ -233,6 +295,13 @@ public class EditProfileActivity extends AppCompatActivity implements IAPICaller
 
     @Override
     public void onFailure(int requestCode, String error) {
+        try{
+            switch (requestCode){
+                case CHANGE_USER_CODE:
+                    Log.d("ERROR", error);
+                    break;
+            }
+        }catch (Exception e){}
 
     }
     @Override

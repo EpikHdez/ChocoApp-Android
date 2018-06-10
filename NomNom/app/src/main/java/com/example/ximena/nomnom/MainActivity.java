@@ -127,6 +127,11 @@ public class MainActivity extends AppCompatActivity implements IAPICaller {
 
         AccessToken accessToken = AccessToken.getCurrentAccessToken();
         boolean isLoggedIn = accessToken != null && !accessToken.isExpired();
+        if(isLoggedIn){
+            Log.d("accessToken",accessToken.toString());
+            //login(user);
+
+        }
         manager=ManagerUser.getInstance();
 
     }

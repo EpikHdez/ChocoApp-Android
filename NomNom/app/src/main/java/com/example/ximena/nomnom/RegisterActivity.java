@@ -6,10 +6,12 @@ import android.content.Intent;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.VolleyError;
@@ -28,6 +30,8 @@ public class RegisterActivity extends AppCompatActivity implements IAPICaller {
     private static final int OPEN_IMAGE_CODE = 200;
     private static final int REGISTER_USER_CODE = 300;
     private static final String RELATIVE_API = "auth/signup";
+    private static final String RELATIVE_API1 ="my/user_address/";
+    private static final int ADD_ADDRESS_USER_CODE = 600;
 
     private ImageView pictureImageView;
     private EditText nameEditText, lastNameEditText, emailEditText, passwordEditText;
@@ -35,12 +39,14 @@ public class RegisterActivity extends AppCompatActivity implements IAPICaller {
 
     private String name, lastName, email, password;
     private Uri pictureUri;
+    ManagerUser managerUser;
+    int flag_activity=0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
-        
+        managerUser=ManagerUser.getInstance();
         pictureImageView = findViewById(R.id.RImageView);
         nameEditText = findViewById(R.id.RtxtName);
         lastNameEditText = findViewById(R.id.RtxtLastname);
@@ -59,7 +65,15 @@ public class RegisterActivity extends AppCompatActivity implements IAPICaller {
             case R.id.RbtnRegister:
                 onRbtnRegisterClicked();
                 break;
+            case R.id.home:
+                flag_activity=0;
+                openMap();
+                break;
 
+            case R.id.job:
+                flag_activity=1;
+                openMap();
+                break;
             default:
                 return;
         }
@@ -94,7 +108,12 @@ public class RegisterActivity extends AppCompatActivity implements IAPICaller {
             registerUser(null);
         }
     }
+    public void openMap(){
+        managerUser.setFlag_map(1);
+        Intent activity = new Intent(this, MapsActivity.class);
+        startActivity(activity);
 
+    }
     private void registerUser(JSONArray picturesURLs) {
         JSONObject user = new JSONObject();
 
@@ -153,14 +172,39 @@ public class RegisterActivity extends AppCompatActivity implements IAPICaller {
 
     @Override
     public void onSuccess(int requestCode, JSONObject response) {
+        TextView txthome = findViewById(R.id.home);
+        TextView txtjob = findViewById(R.id.job);
         switch (requestCode) {
             case UPLOAD_IMAGE_CODE:
                 registerUser(response.optJSONArray("pictures_urls"));
                 break;
 
             case REGISTER_USER_CODE:
-                openHomeActivity();
+                try{
+                    JSONObject job = new JSONObject();
+
+                    String[] shome=txthome.getText().toString().split(":")[1].split(",");
+
+                    String[] sjob=txtjob.getText().toString().split(":")[1].split(",");
+
+                    job.put("longitude", Float.parseFloat(sjob[0]));
+                    job.put("latitude", Float.parseFloat(sjob[1]));
+                    job.put("address_type", 1);
+                    JSONObject house = new JSONObject();
+                    Log.d("response", response.toString());
+                    house.put("latitude", Float.parseFloat(shome[0]));
+                    house.put("logitude", Float.parseFloat(shome[1]));
+                    house.put("address_type", 2);
+
+                    HerokuService.post(RELATIVE_API1, job, ADD_ADDRESS_USER_CODE, this);
+                    HerokuService.post(RELATIVE_API1, house, ADD_ADDRESS_USER_CODE, this);
+                    openHomeActivity();
+                }catch (Exception e) {
+
+
+                }
                 break;
+
         }
     }
 
@@ -171,6 +215,21 @@ public class RegisterActivity extends AppCompatActivity implements IAPICaller {
                 progressDialog.dismiss();
                 Toast.makeText(this, error, Toast.LENGTH_LONG).show();
                 break;
+        }
+    }
+    @Override
+    public void onResume()
+    {  // After a pause OR at startup
+        super.onResume();
+        //Refresh your stuff here
+        if(flag_activity==0){
+            TextView txthome = findViewById(R.id.home);
+
+            txthome.setText("Casa: "+managerUser.getTempLatitud()+", "+managerUser.getTempLongitude());
+
+        }else{
+            TextView txtjob = findViewById(R.id.job);
+            txtjob.setText("Trabajo: "+managerUser.getTempLatitud()+", "+managerUser.getTempLongitude());
         }
     }
 }
