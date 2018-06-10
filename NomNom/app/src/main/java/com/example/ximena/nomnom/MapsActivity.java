@@ -243,13 +243,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         }
         locat=location;
-        try {
-            JSONObject location1 = new JSONObject();
-            location1.put("latitude", locat.getLatitude());
-            location1.put("longitude", locat.getLongitude());
-            location1.put("radius", 50.0f);
-            HerokuService.post(RELATIVE_API, location1, NEARBY_USER_CODE, this);
-        }catch (Exception e){}
+
 
     }
 
@@ -260,7 +254,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             mMap.addMarker(new MarkerOptions()
                     .position(gps)
                     .title("Current Position"));
-            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(gps, 12));
+            markers.add(new MarkerOptions()
+                    .position(gps)
+                    .title("Current Position"));
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(gps, 17));
+            try {
+                JSONObject location1 = new JSONObject();
+                location1.put("latitude", locat.getLatitude());
+                location1.put("longitude", locat.getLongitude());
+                location1.put("radius", 50.0f);
+                HerokuService.post(RELATIVE_API, location1, NEARBY_USER_CODE, this);
+            }catch (Exception e){}
         }
 
     }
@@ -322,7 +326,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 manager.setCurrentLatitud(Float.valueOf(String.valueOf(marker.getPosition().latitude)));
                 manager.setCurrentLongitude(Float.valueOf(String.valueOf(marker.getPosition().longitude)));
                 //finish();
-                if(marker.getTitle().equals("Current Position")){
+                if(marker.getTitle().equals("Current Position")||marker.getTitle().equals("New Marker")){
                     openAddRestaurant();
                }else{
                     opeRestaurant();
