@@ -261,13 +261,13 @@ public class EditProfileActivity extends AppCompatActivity implements IAPICaller
 
                     String[] sjob=txtjob.getText().toString().split(":")[1].split(",");
 
-                    job.put("longitude", Float.parseFloat(sjob[0]));
-                    job.put("latitude", Float.parseFloat(sjob[1]));
+                    job.put("latitude", Float.parseFloat(sjob[0]));
+                    job.put("longitude", Float.parseFloat(sjob[1]));
                     job.put("address_type", 2);
                     JSONObject house = new JSONObject();
                     Log.d("response", response.toString());
                     house.put("latitude", Float.parseFloat(shome[0]));
-                    house.put("logitude", Float.parseFloat(shome[1]));
+                    house.put("longitude", Float.parseFloat(shome[1]));
                     house.put("address_type", 1);
 
                     if(addresses_null) {

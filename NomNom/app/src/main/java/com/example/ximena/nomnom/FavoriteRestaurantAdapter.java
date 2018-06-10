@@ -1,6 +1,7 @@
 package com.example.ximena.nomnom;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,6 +36,7 @@ public class FavoriteRestaurantAdapter extends ArrayAdapter<Restaurant> implemen
     }
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
+        Log.d("Vamos","jij");
         // Get the data item for this position
         Restaurant dataModel = getItem(position);
         // Check if an existing view is being reused, otherwise inflate the view

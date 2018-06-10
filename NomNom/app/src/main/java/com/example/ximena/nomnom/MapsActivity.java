@@ -22,6 +22,7 @@ import android.view.View;
 
 import com.cloudinary.android.Logger;
 import com.example.ximena.nomnom.interfaces.IAPICaller;
+import com.example.ximena.nomnom.model.Restaurant;
 import com.example.ximena.nomnom.services.HerokuService;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
@@ -39,10 +40,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, IAPICaller {
     public static final int LOCATION_UPDATE_MIN_DISTANCE = 10;
@@ -60,9 +63,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private Location loc;
     int flag_map = 0;
     private static final int NEARBY_USER_CODE = 400;
+    private static final int PLACE_USER_CODE = 500;
     private static final String RELATIVE_API = "nearby";
+    private static final String RELATIVE_API1 ="place/";
     int flag = NEARBY_USER_CODE;
     Location locat;
+    IAPICaller context;
 
     private LocationListener mLocationListener = new LocationListener() {
         @Override
@@ -107,6 +113,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         mGalleryView = (PlaceHolderView) findViewById(R.id.galleryView);
         markers = new ArrayList<MarkerOptions>();
+        context=this;
         setupDrawer();
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -301,14 +308,32 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         try{
         for(int i=0; i<jsonArray.length();i++) {
             JSONObject rest= (JSONObject) jsonArray.get(i);
+            Log.d("rest",rest.toString());
+            int id=rest.getInt("id");
             String name=rest.get("name").toString();
             Log.d("name",name);
             JSONObject address=rest.getJSONObject("address");
             double longitude= address.getDouble("longitude");
             double latitude= address.getDouble("latitude");
+            JSONObject address_type=address.getJSONObject("address_type");
+            String type=address_type.getString("name");
+            Log.d("type",type);
+            //float latitude, float longitude, String type, HashMap<String, String> pictures
+            JSONArray picturesJSON=rest.getJSONArray("pictures");
+            Log.d("pictures",picturesJSON.toString());
+            HashMap<String, String> pictures=new HashMap<>();
+            /*for(int j=0;j<picturesJSON.length();j++) {
+                JSONObject picture=picturesJSON.getJSONObject(i);
+                String url=picture.getString("url");
+                Log.d("url",url);
+                pictures.put(name+(j+1), url);
+            }
+            */
+            Restaurant restaurant=new Restaurant(id,name,Float.valueOf(String.valueOf(latitude)),Float.valueOf(String.valueOf(longitude)),type,pictures);
             MarkerOptions marker = new MarkerOptions().position(new LatLng(latitude, longitude)).title(name);
             markers.add(marker);
-            mMap.addMarker(marker);
+            Marker mmarker=mMap.addMarker(marker);
+            mmarker.setTag(restaurant);
             Log.d("SIP","Si se agrego");
         }}catch (Exception e){}
     }
@@ -329,12 +354,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 if(marker.getTitle().equals("Current Position")||marker.getTitle().equals("New Marker")){
                     openAddRestaurant();
                }else{
-                    opeRestaurant();
+
+                    manager.setCurrentRestaurant((Restaurant) marker.getTag());
+                    HerokuService.get(RELATIVE_API1+manager.getCurrentRestaurant().getId(),  PLACE_USER_CODE, (IAPICaller) context);
+
                 }
                 return false;
             }
         });
     }
+
 
     public void onMapClickAddRestaurant(){
         mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
@@ -376,6 +405,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     Log.d("nearby", response.toString());
                     JSONArray places = response.getJSONArray("places");
                     showNearby(places);
+                    break;
+                case PLACE_USER_CODE:
+                    Log.d("placej", response.toString());
+                    JSONObject place=response.getJSONObject("place");
+                    JSONArray picturesJSON=place.getJSONArray("pictures");
+                    Log.d("pictures",picturesJSON.toString());
+                    HashMap<String, String> pictures=new HashMap<>();
+                    for(int j=0;j<picturesJSON.length();j++) {
+                        JSONObject picture=picturesJSON.getJSONObject(j);
+                        String url=picture.getString("url");
+                        Log.d("url",url);
+                        pictures.put(manager.getCurrentRestaurant().getName()+(j+1), url);
+                    }
+                    manager.getCurrentRestaurant().setPictures(pictures);
+                    opeRestaurant();
                     break;
             }
         }catch(Exception e){

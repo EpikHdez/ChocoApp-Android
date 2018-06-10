@@ -9,7 +9,7 @@
         android:orientation="vertical"
         xmlns:tools="http://schemas.android.com/tools"
         android:background="@color/common_google_signin_btn_text_dark_default"
-        tools:context=".DiscoveryActivity">
+        tools:context=".PointsActivity">
 
         <include
             android:id="@+id/toolbar"
@@ -24,19 +24,19 @@
         </com.mindorks.placeholderview.PlaceHolderView>
 
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <GridView
-            android:id="@+id/list_disc_resta"
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:horizontalSpacing="0dp"
-            android:numColumns="2"
-            android:stretchMode="columnWidth"
-            android:verticalSpacing="0dp" />
-    </RelativeLayout>
+            android:layout_height="match_parent">
+
+            <GridView
+                android:id="@+id/list_disc_resta"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:horizontalSpacing="0dp"
+                android:numColumns="2"
+                android:stretchMode="columnWidth"
+                android:verticalSpacing="0dp" />
+        </RelativeLayout>
 
     </LinearLayout>
     <FrameLayout

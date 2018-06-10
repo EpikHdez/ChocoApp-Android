@@ -44,26 +44,28 @@
                 android:textSize="18sp" />
 
             <Button
-                android:id="@+id/button9"
+                android:id="@+id/local"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="25dp"
                 android:layout_marginRight="25dp"
                 android:background="@drawable/space"
+                android:onClick="localPosition"
                 android:text="Ubicación Actual" />
 
             <Button
-                android:id="@+id/button11"
+                android:id="@+id/home"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="25dp"
                 android:layout_marginRight="25dp"
                 android:layout_marginTop="10dp"
                 android:background="@drawable/space"
+                android:onClick="homePosition"
                 android:text="Casa" />
 
             <Button
-                android:id="@+id/button10"
+                android:id="@+id/job"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="20dp"
@@ -71,6 +73,7 @@
                 android:layout_marginRight="25dp"
                 android:layout_marginTop="10dp"
                 android:background="@drawable/space"
+                android:onClick="jobPosition"
                 android:text="Trabajo" />
 
             <Button

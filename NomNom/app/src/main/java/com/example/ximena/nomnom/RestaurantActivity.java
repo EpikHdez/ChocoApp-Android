@@ -38,6 +38,7 @@ public class  RestaurantActivity extends AppCompatActivity implements BaseSlider
     private static final int SHOW_FAVORITE_CODE = 200;
     private static final int DELETE_FAVORITE_CODE = 300;
     private static final String RELATIVE_API = "my/favorite_place";
+
     boolean exist=false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,6 +98,7 @@ public class  RestaurantActivity extends AppCompatActivity implements BaseSlider
             if(!exist) {
                 HerokuService.post(RELATIVE_API, place, FAVORITE_CODE, this);
             }else {
+
                 HerokuService.delete(RELATIVE_API + "/" + managerUser.getCurrentRestaurant().getId(), DELETE_FAVORITE_CODE, this);
             }
         }catch (Exception e){
@@ -168,8 +170,9 @@ public class  RestaurantActivity extends AppCompatActivity implements BaseSlider
                     exist=true;
                     break;
                 case DELETE_FAVORITE_CODE:
-                    favbtn.setBackgroundResource((R.drawable.lov2));
                     exist=false;
+                    favbtn.setBackgroundResource((R.drawable.lov2));
+
                     break;
                 case SHOW_FAVORITE_CODE:
                     Log.d("RESPONSE A", response.toString());
@@ -189,6 +192,25 @@ public class  RestaurantActivity extends AppCompatActivity implements BaseSlider
 
     @Override
     public void onFailure(int requestCode, String error) {
+        Button favbtn = findViewById(R.id.addFav);
+        try {
+            switch (requestCode) {
+                case FAVORITE_CODE:
+                    favbtn.setBackgroundResource((R.drawable.lov3));
+                    exist = true;
+                    break;
+                case DELETE_FAVORITE_CODE:
+                    exist = false;
+                    favbtn.setBackgroundResource((R.drawable.lov2));
 
+                    break;
+
+
+            }
+        } catch (Exception e) {
+        }
     }
+
+
+
 }
