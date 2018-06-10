@@ -4,5 +4,5 @@ import org.json.JSONObject;
 
 public interface IAPICaller {
     void onSuccess(int requestCode, JSONObject response);
-    void onFailure(int requestCode, Object error);
+    void onFailure(int requestCode, String error);
 }

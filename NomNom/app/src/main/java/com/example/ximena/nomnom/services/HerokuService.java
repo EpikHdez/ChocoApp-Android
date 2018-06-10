@@ -13,6 +13,7 @@ import com.example.ximena.nomnom.interfaces.IAPICaller;
 import org.json.JSONObject;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 public class HerokuService {
@@ -139,7 +140,21 @@ public class HerokuService {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        caller.onFailure(requestCode, error);
+                        try {
+                            String responseBody = new String(error.networkResponse.data, "utf-8");
+                            JSONObject errors = new JSONObject(responseBody).optJSONObject("errors");
+                            String message = "";
+
+                            for (Iterator<String> iter = errors.keys(); iter.hasNext(); ) {
+                                String key = iter.next();
+
+                                message += String.format("%s %s\n", key, errors.optString(key));
+                            }
+
+                            caller.onFailure(requestCode, message);
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
                     }
                 }) {
             public Map<String, String> getHeaders() {

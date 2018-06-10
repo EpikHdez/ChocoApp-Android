@@ -220,7 +220,7 @@ public class MainActivity extends AppCompatActivity implements IAPICaller {
     }
 
     @Override
-    public void onFailure(int requestCode, Object error) {
+    public void onFailure(int requestCode, String error) {
         switch (flag){
             case 0:
                 break;
