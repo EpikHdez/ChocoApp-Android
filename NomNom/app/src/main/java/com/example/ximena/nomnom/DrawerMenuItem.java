@@ -140,6 +140,7 @@ public class DrawerMenuItem {
                 activity = new Intent(mContext, ConfigActivity.class);
                 activity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 mContext.startActivity(activity);
+
                 Log.d("Cambio","Config");
 
                 if(mCallBack != null)mCallBack.onTermsMenuSelected();
