@@ -14,11 +14,37 @@ class ManagerUser {
     private ArrayList<Product> currentProducts;
     private float currentLatitud;
     private float currentLongitude;
+    private float tempLatitud, tempLongitude;
     private String name, lastname;
     private String email;
     private String picture;
     private int idUser;
     private Context currentContext;
+    private int flag_map;
+
+    public float getTempLatitud() {
+        return tempLatitud;
+    }
+
+    public void setTempLatitud(float tempLatitud) {
+        this.tempLatitud = tempLatitud;
+    }
+
+    public float getTempLongitude() {
+        return tempLongitude;
+    }
+
+    public void setTempLongitude(float tempLongitude) {
+        this.tempLongitude = tempLongitude;
+    }
+
+    public int getFlag_map() {
+        return flag_map;
+    }
+
+    public void setFlag_map(int flag_map) {
+        this.flag_map = flag_map;
+    }
 
     public Context getCurrentContext() {
         return currentContext;
