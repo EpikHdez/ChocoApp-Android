@@ -38,6 +38,7 @@ import android.Manifest;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.lang.reflect.Array;
@@ -61,6 +62,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private static final int NEARBY_USER_CODE = 400;
     private static final String RELATIVE_API = "nearby";
     int flag = NEARBY_USER_CODE;
+    Location locat;
 
     private LocationListener mLocationListener = new LocationListener() {
         @Override
@@ -114,6 +116,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         initMap();
         getCurrentLocation();
+
+
     }
 
     private void setupDrawer() {
@@ -236,7 +240,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             Log.d("asjfhajkdgsdfgs",String.format("getCurrentLocation(%f, %f)", location.getLatitude(),
                     location.getLongitude()));
             drawMarker(location);
+
         }
+        locat=location;
+        try {
+            JSONObject location1 = new JSONObject();
+            location1.put("latitude", locat.getLatitude());
+            location1.put("longitude", locat.getLongitude());
+            location1.put("radius", 50.0f);
+            HerokuService.post(RELATIVE_API, location1, NEARBY_USER_CODE, this);
+        }catch (Exception e){}
+
     }
 
     private void drawMarker(Location location) {
@@ -274,10 +288,26 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 MarkerOptions marker = new MarkerOptions().position(
                         new LatLng(point.latitude, point.longitude)).title("New Marker");
                 mMap.addMarker(marker);
+
             }
         });
     }
 
+    public void showNearby(JSONArray jsonArray){
+        try{
+        for(int i=0; i<jsonArray.length();i++) {
+            JSONObject rest= (JSONObject) jsonArray.get(i);
+            String name=rest.get("name").toString();
+            Log.d("name",name);
+            JSONObject address=rest.getJSONObject("address");
+            double longitude= address.getDouble("longitude");
+            double latitude= address.getDouble("latitude");
+            MarkerOptions marker = new MarkerOptions().position(new LatLng(latitude, longitude)).title(name);
+            markers.add(marker);
+            mMap.addMarker(marker);
+            Log.d("SIP","Si se agrego");
+        }}catch (Exception e){}
+    }
     public void putPositions(){
         for (MarkerOptions m : markers) {
             mMap.addMarker(m);
@@ -292,7 +322,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 manager.setCurrentLatitud(Float.valueOf(String.valueOf(marker.getPosition().latitude)));
                 manager.setCurrentLongitude(Float.valueOf(String.valueOf(marker.getPosition().longitude)));
                 //finish();
-                openAddRestaurant();
+                if(marker.getTitle().equals("Current Position")){
+                    openAddRestaurant();
+               }else{
+                    opeRestaurant();
+                }
                 return false;
             }
         });
@@ -310,6 +344,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 markers.add(marker);
                 manager.setCurrentLatitud(Float.valueOf(String.valueOf(point.latitude)));
                 manager.setCurrentLongitude(Float.valueOf(String.valueOf(point.longitude)));
+
                 openAddRestaurant();
 
                 System.out.println(point.latitude + "---" + point.longitude);
@@ -323,8 +358,25 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
+    public void opeRestaurant(){
+        Intent activity = new Intent(this, RestaurantActivity.class);
+        startActivity(activity);
+
+    }
     @Override
     public void onSuccess(int requestCode, JSONObject response) {
+        Log.d("Si llamo","si");
+        try {
+            switch (requestCode) {
+                case NEARBY_USER_CODE:
+                    Log.d("nearby", response.toString());
+                    JSONArray places = response.getJSONArray("places");
+                    showNearby(places);
+                    break;
+            }
+        }catch(Exception e){
+
+        }
 
     }
 
