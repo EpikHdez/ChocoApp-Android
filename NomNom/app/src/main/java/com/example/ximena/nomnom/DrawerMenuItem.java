@@ -1,5 +1,6 @@
 package com.example.ximena.nomnom;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
@@ -89,12 +90,14 @@ public class DrawerMenuItem {
 
             case DRAWER_MENU_ITEM_HOME:
                 activity = new Intent(mContext, HomeActivity.class);
+                activity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 mContext.startActivity(activity);
 
                 if(mCallBack != null)mCallBack.onProfileMenuSelected();
                 break;
             case DRAWER_MENU_ITEM_PROFILE:
                 activity = new Intent(mContext, EditProfileActivity.class);
+                activity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 mContext.startActivity(activity);
                 Log.d("Cambio","Profile");
 
@@ -102,6 +105,7 @@ public class DrawerMenuItem {
                 break;
             case DRAWER_MENU_ITEM_FAVORITES:
                 activity = new Intent(mContext, FavoriteRestaurantsActivity.class);
+                activity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 mContext.startActivity(activity);
                 Log.d("Cambio","Fav");
 
@@ -109,6 +113,7 @@ public class DrawerMenuItem {
                 break;
             case DRAWER_MENU_ITEM_SEARCH:
                 activity = new Intent(mContext, FindRestaurantsActivity.class);
+                activity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 mContext.startActivity(activity);
                 Log.d("Cambio","Search");
 
@@ -116,6 +121,7 @@ public class DrawerMenuItem {
                 break;
             case DRAWER_MENU_ITEM_FIND:
                 activity = new Intent(mContext, DiscoveryActivity.class);
+                activity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 mContext.startActivity(activity);
                 Log.d("Cambio","Find");
 
@@ -124,6 +130,7 @@ public class DrawerMenuItem {
             case DRAWER_MENU_ITEM_MAP:
                 managerUser.setFlag_map(0);
                 activity = new Intent(mContext, MapsActivity.class);
+                activity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 mContext.startActivity(activity);
                 Log.d("Cambio","Map");
 
@@ -131,6 +138,7 @@ public class DrawerMenuItem {
                 break;
             case DRAWER_MENU_ITEM_CONFIG:
                 activity = new Intent(mContext, ConfigActivity.class);
+                activity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 mContext.startActivity(activity);
                 Log.d("Cambio","Config");
 
@@ -139,6 +147,7 @@ public class DrawerMenuItem {
             case DRAWER_MENU_ITEM_LOGOUT:
 
                 activity = new Intent(mContext, MainActivity.class);
+                activity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 mContext.startActivity(activity);
                 Log.d("Cambio","Logout");
                 if(mCallBack != null)mCallBack.onLogoutMenuSelected();
