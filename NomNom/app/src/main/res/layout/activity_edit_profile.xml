@@ -38,7 +38,7 @@
                 android:orientation="vertical">
 
                 <ImageView
-                    android:id="@+id/imageView4"
+                    android:id="@+id/image"
                     android:layout_width="match_parent"
                     android:layout_height="200dp"
                     android:layout_marginTop="10dp"
@@ -52,22 +52,23 @@
                     android:gravity="left"
                     android:orientation="vertical">
 
-                    <TextView
-                        android:id="@+id/textView5"
+                    <EditText
+                        android:id="@+id/name"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="match_parent"
                         android:layout_weight="1"
-                        android:text="Nombre"
-                        android:textSize="18sp" />
+                        android:ems="10"
+                        android:hint="Nombre"
+                        android:inputType="textPersonName" />
 
-                    <TextView
-                        android:id="@+id/textView6"
+                    <EditText
+                        android:id="@+id/email"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
+                        android:layout_height="match_parent"
                         android:layout_weight="1"
-                        android:text="Correo"
-                        android:textSize="18sp" />
+                        android:ems="10"
+                        android:hint="usuario@correo.com"
+                        android:inputType="textPersonName" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -85,7 +86,7 @@
                             app:srcCompat="@drawable/point" />
 
                         <TextView
-                            android:id="@+id/textView4"
+                            android:id="@+id/home"
                             android:layout_width="400dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
@@ -110,7 +111,7 @@
                             app:srcCompat="@drawable/point" />
 
                         <TextView
-                            android:id="@+id/textView4"
+                            android:id="@+id/job"
                             android:layout_width="400dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
