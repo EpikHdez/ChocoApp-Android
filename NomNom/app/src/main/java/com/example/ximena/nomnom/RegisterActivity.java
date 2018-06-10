@@ -133,8 +133,7 @@ public class RegisterActivity extends AppCompatActivity implements IAPICaller {
                 message += String.format("%s %s\n", key, errors.optString(key));
             }
 
-            progressDialog.dismiss();
-            Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -166,10 +165,11 @@ public class RegisterActivity extends AppCompatActivity implements IAPICaller {
     }
 
     @Override
-    public void onFailure(int requestCode, Object error) {
+    public void onFailure(int requestCode, String error) {
         switch (requestCode) {
             case REGISTER_USER_CODE:
-                processError((VolleyError) error);
+                progressDialog.dismiss();
+                Toast.makeText(this, error, Toast.LENGTH_LONG).show();
                 break;
         }
     }

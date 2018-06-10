@@ -234,7 +234,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     @Override
-    public void onFailure(int requestCode, Object error) {
+    public void onFailure(int requestCode, String error) {
 
     }
 

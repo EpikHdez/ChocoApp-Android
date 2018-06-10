@@ -96,7 +96,7 @@ public class EditProfileActivity extends AppCompatActivity implements IAPICaller
     }
 
     @Override
-    public void onFailure(int requestCode, Object error) {
+    public void onFailure(int requestCode, String error) {
 
     }
     
