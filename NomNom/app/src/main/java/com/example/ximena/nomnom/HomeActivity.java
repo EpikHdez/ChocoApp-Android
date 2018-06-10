@@ -28,6 +28,7 @@ public class HomeActivity extends AppCompatActivity {
     ArrayList<New> dataModels;
     ListView listView;
     private static NewsAdapter adapter;
+    ManagerUser managerUser;
     @SuppressLint("WrongViewCast")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +40,8 @@ public class HomeActivity extends AppCompatActivity {
         mToolbar = (Toolbar)findViewById(R.id.toolbar);
         mGalleryView = (PlaceHolderView)findViewById(R.id.galleryView);
         setupDrawer();
+        managerUser=ManagerUser.getInstance();
+        managerUser.setCurrentContext(this);
         listView=(ListView)findViewById(R.id.list_news);
 
         dataModels= new ArrayList<>();

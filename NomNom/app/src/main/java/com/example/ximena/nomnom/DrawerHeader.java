@@ -1,5 +1,6 @@
 package com.example.ximena.nomnom;
 
+import android.content.Context;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -7,6 +8,7 @@ import com.mindorks.placeholderview.annotations.Layout;
 import com.mindorks.placeholderview.annotations.NonReusable;
 import com.mindorks.placeholderview.annotations.Resolve;
 import com.mindorks.placeholderview.annotations.View;
+import com.squareup.picasso.Picasso;
 
 @NonReusable
 @Layout(R.layout.drawer_header)
@@ -23,7 +25,10 @@ public class DrawerHeader {
 
     @Resolve
     private void onResolved() {
-        nameTxt.setText("Nombre");
-        emailTxt.setText("usuario@correo.com");
+        ManagerUser managerUser=ManagerUser.getInstance();
+        nameTxt.setText(managerUser.getName()+" "+managerUser.getLastname());
+        emailTxt.setText(managerUser.getEmail());
+
+        Picasso.with(managerUser.getCurrentContext()).load(managerUser.getPicture()).into(profileImage);
     }
 }

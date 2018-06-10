@@ -1,28 +1,64 @@
-package com.example.ximena.nomnom.controller;
+package com.example.ximena.nomnom;
+
+import android.content.Context;
 
 import com.example.ximena.nomnom.model.Product;
 import com.example.ximena.nomnom.model.Restaurant;
 
 import java.util.ArrayList;
 
-class Manager {
+class ManagerUser {
     private Restaurant currentRestaurant;
     private Product currentProduct;
     private ArrayList<Restaurant> currentRestaurants;
     private ArrayList<Product> currentProducts;
     private float currentLatitud;
     private float currentLongitude;
-    private String name;
+    private String name, lastname;
     private String email;
+    private String picture;
+    private int idUser;
+    private Context currentContext;
 
+    public Context getCurrentContext() {
+        return currentContext;
+    }
 
-    private static final Manager ourInstance = new Manager();
+    public void setCurrentContext(Context currentContext) {
+        this.currentContext = currentContext;
+    }
 
-    static Manager getInstance() {
+    public String getLastname() {
+        return lastname;
+    }
+
+    public void setLastname(String lastname) {
+        this.lastname = lastname;
+    }
+
+    public String getPicture() {
+        return picture;
+    }
+
+    public void setPicture(String picture) {
+        this.picture = picture;
+    }
+
+    public int getIdUser() {
+        return idUser;
+    }
+
+    public void setIdUser(int idUser) {
+        this.idUser = idUser;
+    }
+
+    private static final ManagerUser ourInstance = new ManagerUser();
+
+    static ManagerUser getInstance() {
         return ourInstance;
     }
 
-    private Manager() {
+    private ManagerUser() {
     }
 
     public Restaurant getCurrentRestaurant() {
