@@ -352,8 +352,9 @@ public class AddRestaurantActivity extends AppCompatActivity
                 break;
 
             case UPLOAD_IMAGES:
-                if (imageCount-- > 0) {
-                    getPicturesUrls(response);
+                getPicturesUrls(response);
+
+                if (--imageCount > 0) {
                     return;
                 }
 

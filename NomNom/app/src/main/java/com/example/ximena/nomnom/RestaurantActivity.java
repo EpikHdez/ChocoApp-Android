@@ -95,8 +95,7 @@ public class  RestaurantActivity extends AppCompatActivity implements BaseSlider
             JSONObject place = new JSONObject();
             place.put("place_id", managerUser.getCurrentRestaurant().getId());
             if(!exist) {
-                HerokuService.put(RELATIVE_API, place, FAVORITE_CODE, this);
-
+                HerokuService.post(RELATIVE_API, place, FAVORITE_CODE, this);
             }else {
                 HerokuService.delete(RELATIVE_API + "/" + managerUser.getCurrentRestaurant().getId(), DELETE_FAVORITE_CODE, this);
             }
