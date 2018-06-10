@@ -95,10 +95,11 @@
                     app:srcCompat="@drawable/point" />
 
                 <TextView
-                    android:id="@+id/textView4"
+                    android:id="@+id/home"
                     android:layout_width="200dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:onClick="onViewClicked"
                     android:text="Casa"
                     android:textSize="18sp" />
             </LinearLayout>
@@ -117,10 +118,11 @@
                     app:srcCompat="@drawable/point" />
 
                 <TextView
-                    android:id="@+id/textView4"
+                    android:id="@+id/job"
                     android:layout_width="200dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:onClick="onViewClicked"
                     android:text="Trabajo"
                     android:textSize="18sp" />
             </LinearLayout>
