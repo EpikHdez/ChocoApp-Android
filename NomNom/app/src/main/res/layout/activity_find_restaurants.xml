@@ -38,6 +38,7 @@
             android:orientation="vertical">
 
             <SearchView
+                android:id="@+id/SearchPlace"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
@@ -46,13 +47,15 @@
 
             </SearchView>
 
-            <ListView
-                android:id="@+id/list_find_resta"
+            <GridView
+                android:id="@+id/list_disc_resta"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"
-                android:layout_marginTop="10dp" />
+                android:horizontalSpacing="0dp"
+                android:numColumns="2"
+                android:stretchMode="columnWidth"
+                android:verticalSpacing="0dp" />
+
         </LinearLayout>
     </RelativeLayout>
 
