@@ -22,7 +22,7 @@ public class DrawerMenuItem {
     public static final int DRAWER_MENU_ITEM_MAP = 6;
     public static final int  DRAWER_MENU_ITEM_CONFIG = 7;
     public static final int DRAWER_MENU_ITEM_LOGOUT = 8;
-
+    ManagerUser managerUser;
     private int mMenuPosition;
     private Context mContext;
     private DrawerCallBack mCallBack;
@@ -36,6 +36,7 @@ public class DrawerMenuItem {
     public DrawerMenuItem(Context context, int menuPosition) {
         mContext = context;
         mMenuPosition = menuPosition;
+        managerUser=ManagerUser.getInstance();
     }
 
     @Resolve
@@ -121,6 +122,7 @@ public class DrawerMenuItem {
                 if(mCallBack != null)mCallBack.onNotificationsMenuSelected();
                 break;
             case DRAWER_MENU_ITEM_MAP:
+                managerUser.setFlag_map(0);
                 activity = new Intent(mContext, MapsActivity.class);
                 mContext.startActivity(activity);
                 Log.d("Cambio","Map");

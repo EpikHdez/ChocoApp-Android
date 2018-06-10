@@ -1,5 +1,7 @@
 package com.example.ximena.nomnom;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -27,6 +29,7 @@ public class EditProfileActivity extends AppCompatActivity implements IAPICaller
     private PlaceHolderView mGalleryView;
     private static final int ADDRESS_USER_CODE = 500;
     ManagerUser managerUser;
+    int flag_activity;
     private static final String RELATIVE_API = "my/user_address";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,6 +71,29 @@ public class EditProfileActivity extends AppCompatActivity implements IAPICaller
         drawerToggle.syncState();
     }
 
+    public void openMap(){
+        managerUser.setFlag_map(1);
+        Intent activity = new Intent(this, MapsActivity.class);
+        startActivity(activity);
+
+    }
+    public void onViewClicked(View view) {
+        switch (view.getId()) {
+            case R.id.home:
+                flag_activity=0;
+                openMap();
+                break;
+
+            case R.id.job:
+                flag_activity=1;
+                openMap();
+                break;
+
+            default:
+                return;
+        }
+    }
+
     @Override
     public void onSuccess(int requestCode, JSONObject response) {
         try {
@@ -99,5 +125,38 @@ public class EditProfileActivity extends AppCompatActivity implements IAPICaller
     public void onFailure(int requestCode, String error) {
 
     }
-    
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // Check which request we're responding to
+
+        super.onActivityResult(requestCode, resultCode, data);
+        if(resultCode==RESULT_OK){
+            if(flag_activity==0){
+                TextView txthome = findViewById(R.id.home);
+
+                txthome.setText(managerUser.getTempLatitud()+","+managerUser.getTempLongitude());
+
+            }else{
+                TextView txtjob = findViewById(R.id.job);
+                txtjob.setText(managerUser.getTempLatitud()+","+managerUser.getTempLongitude());
+            }
+
+
+        }
+    }
+    @Override
+    public void onResume()
+    {  // After a pause OR at startup
+        super.onResume();
+        //Refresh your stuff here
+        if(flag_activity==0){
+            TextView txthome = findViewById(R.id.home);
+
+            txthome.setText("Casa: "+managerUser.getTempLatitud()+", "+managerUser.getTempLongitude());
+
+        }else{
+            TextView txtjob = findViewById(R.id.job);
+            txtjob.setText("Trabajo: "+managerUser.getTempLatitud()+", "+managerUser.getTempLongitude());
+        }
+    }
 }

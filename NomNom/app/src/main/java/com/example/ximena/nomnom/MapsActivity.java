@@ -48,7 +48,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     LocationManager locationManager;
     LocationListener locationListener;
     ArrayList<MarkerOptions> markers;
-
+    int flag_map=0;
     private static final int NEARBY_USER_CODE = 400;
 
     private static final String RELATIVE_API = "nearby";
@@ -58,7 +58,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+
         manager=ManagerUser.getInstance();
+        flag_map=manager.getFlag_map();
         mDrawer = (DrawerLayout)findViewById(R.id.drawerLayout);
         mDrawerView = (PlaceHolderView)findViewById(R.id.drawerView);
         mToolbar = (Toolbar)findViewById(R.id.toolbar);
@@ -121,98 +123,215 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        locationManager  = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+        if (flag_map==0) {
+            locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 
-        locationListener = new LocationListener() {
-            @Override
-            public void onLocationChanged(Location location) {
+            locationListener = new LocationListener() {
+                @Override
+                public void onLocationChanged(Location location) {
+
+                    mMap.clear();
+
+                    LatLng userLocation = new LatLng(location.getLatitude(), location.getLongitude());
+
+                    mMap.addMarker(new MarkerOptions().position(userLocation).title("Marker"));
+                    for (MarkerOptions m : markers) {
+                        mMap.addMarker(m);
+                    }
+                    mMap.moveCamera(CameraUpdateFactory.newLatLng(userLocation));
+
+                    //Toast.makeText(MapsActivity.this, userLocation.toString(), Toast.LENGTH_SHORT).show();
+                    getNearby(Float.valueOf(String.valueOf(location.getLatitude())), Float.valueOf(String.valueOf(location.getLongitude())), 10.0f);
+
+                }
+
+                @Override
+                public void onStatusChanged(String provider, int status, Bundle extras) {
+
+
+                }
+
+                @Override
+                public void onProviderEnabled(String provider) {
+
+                }
+
+                @Override
+                public void onProviderDisabled(String provider) {
+
+                }
+
+
+            };
+
+
+            if (Build.VERSION.SDK_INT < 23) {
+
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
+
+            } else if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
+
+                Location lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+
+                LatLng userLocation = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
 
                 mMap.clear();
 
-                LatLng userLocation = new LatLng(location.getLatitude(), location.getLongitude());
+                mMap.addMarker(new MarkerOptions().position(userLocation).title("Posición Actual."));
 
-                mMap.addMarker(new MarkerOptions().position(userLocation).title("Marker"));
-                for (MarkerOptions m:markers){
-                    mMap.addMarker(m);
-                }
                 mMap.moveCamera(CameraUpdateFactory.newLatLng(userLocation));
+                mMap.animateCamera(CameraUpdateFactory.zoomTo(17.0f));
+                getNearby(Float.valueOf(String.valueOf(lastKnownLocation.getLatitude())), Float.valueOf(String.valueOf(lastKnownLocation.getLongitude())), 10.0f);
 
                 //Toast.makeText(MapsActivity.this, userLocation.toString(), Toast.LENGTH_SHORT).show();
-                getNearby(Float.valueOf(String.valueOf(location.getLatitude())),Float.valueOf(String.valueOf(location.getLongitude())),10.0f);
+                mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+                    @Override
+                    public boolean onMarkerClick(Marker marker) {
+                        Toast.makeText(MapsActivity.this, "holi", Toast.LENGTH_SHORT).show();
+                        //finish();
+
+                        return false;
+                    }
+                });
+                mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+
+                    @Override
+                    public void onMapClick(LatLng point) {
+                        //mMap.clear();
+                        MarkerOptions marker = new MarkerOptions().position(
+                                new LatLng(point.latitude, point.longitude)).title("New Marker");
+                        mMap.addMarker(marker);
+                        markers.add(marker);
+                        manager.setCurrentLatitud(Float.valueOf(String.valueOf(point.latitude)));
+                        manager.setCurrentLongitude(Float.valueOf(String.valueOf(point.longitude)));
+                        openAddRestaurant();
+
+                        System.out.println(point.latitude + "---" + point.longitude);
+                    }
+                });
+
+            } else {
+
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
 
             }
+        }else{
+            locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 
-            @Override
-            public void onStatusChanged(String provider, int status, Bundle extras) {
-
-
-            }
-
-            @Override
-            public void onProviderEnabled(String provider) {
-
-            }
-
-            @Override
-            public void onProviderDisabled(String provider) {
-
-            }
-
-
-        };
-
-        if (Build.VERSION.SDK_INT < 23 ){
-
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
-
-        }else if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
-
-            Location lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-
-            LatLng userLocation = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
-
-            mMap.clear();
-
-            mMap.addMarker(new MarkerOptions().position(userLocation).title("Posición Actual."));
-
-            mMap.moveCamera(CameraUpdateFactory.newLatLng(userLocation));
-            mMap.animateCamera( CameraUpdateFactory.zoomTo( 17.0f ) );
-            getNearby(Float.valueOf(String.valueOf(lastKnownLocation.getLatitude())),Float.valueOf(String.valueOf(lastKnownLocation.getLongitude())),10.0f);
-
-            //Toast.makeText(MapsActivity.this, userLocation.toString(), Toast.LENGTH_SHORT).show();
-            mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-                @Override
-                public boolean onMarkerClick(Marker marker) {
-                    Toast.makeText(MapsActivity.this, "holi", Toast.LENGTH_SHORT).show();
-                    //finish();
-                    manager.setCurrentLatitud(Float.valueOf(String.valueOf(marker.getPosition().latitude)));
-                    manager.setCurrentLongitude(Float.valueOf(String.valueOf(marker.getPosition().longitude)));
-                    openAddRestaurant();
-                    return false;
-                }
-            });
-            mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+            locationListener = new LocationListener() {
 
                 @Override
-                public void onMapClick(LatLng point) {
+                public void onLocationChanged(Location location) {
 
-                    MarkerOptions marker = new MarkerOptions().position(
-                            new LatLng(point.latitude, point.longitude)).title("New Marker");
-                    mMap.addMarker(marker);
-                    markers.add(marker);
-                    manager.setCurrentLatitud(Float.valueOf(String.valueOf(point.latitude)));
-                    manager.setCurrentLongitude(Float.valueOf(String.valueOf(point.longitude)));
-                    openAddRestaurant();
 
-                    System.out.println(point.latitude+"---"+ point.longitude);
+
+                    LatLng userLocation = new LatLng(location.getLatitude(), location.getLongitude());
+
+                    //mMap.addMarker(new MarkerOptions().position(userLocation).title("Marker"));
+
+                    mMap.moveCamera(CameraUpdateFactory.newLatLng(userLocation));
+                    mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+                        @Override
+                        public boolean onMarkerClick(Marker marker) {
+
+                            manager.setTempLatitud(Float.valueOf(String.valueOf(marker.getPosition().latitude)));
+                            manager.setTempLongitude(Float.valueOf(String.valueOf(marker.getPosition().longitude)));
+
+                            finish();
+
+                            return false;
+                        }
+                    });
+                    mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+
+                        @Override
+                        public void onMapClick(LatLng point) {
+                            mMap.clear();
+                            MarkerOptions marker = new MarkerOptions().position(
+                                    new LatLng(point.latitude, point.longitude)).title("New Marker");
+                            mMap.addMarker(marker);
+
+
+                        }
+                    });
+
+
                 }
-            });
 
-        } else {
+                @Override
+                public void onStatusChanged(String provider, int status, Bundle extras) {
 
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+
+                }
+
+                @Override
+                public void onProviderEnabled(String provider) {
+
+                }
+
+                @Override
+                public void onProviderDisabled(String provider) {
+
+                }
+
+
+            };
+
+            if (Build.VERSION.SDK_INT < 23) {
+
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
+
+            } else if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
+
+                Location lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+
+                LatLng userLocation = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
+
+
+
+               // mMap.addMarker(new MarkerOptions().position(userLocation).title("Posición Actual."));
+
+                mMap.moveCamera(CameraUpdateFactory.newLatLng(userLocation));
+                mMap.animateCamera(CameraUpdateFactory.zoomTo(17.0f));
+
+                //Toast.makeText(MapsActivity.this, userLocation.toString(), Toast.LENGTH_SHORT).show();
+                mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+                    @Override
+                    public boolean onMarkerClick(Marker marker) {
+                        manager.setTempLatitud(Float.valueOf(String.valueOf(marker.getPosition().latitude)));
+                        manager.setTempLongitude(Float.valueOf(String.valueOf(marker.getPosition().longitude)));
+
+
+                        finish();
+
+                        return false;
+                    }
+                });
+                mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+
+                    @Override
+                    public void onMapClick(LatLng point) {
+                        mMap.clear();
+                        MarkerOptions marker = new MarkerOptions().position(
+                                new LatLng(point.latitude, point.longitude)).title("New Marker");
+                        mMap.addMarker(marker);
+
+
+
+                    }
+                });
+
+            } else {
+
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+
+            }
+
+
 
         }
 
