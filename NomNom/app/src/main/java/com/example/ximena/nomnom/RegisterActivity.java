@@ -139,24 +139,6 @@ public class RegisterActivity extends AppCompatActivity implements IAPICaller {
         finish();
     }
 
-    private void processError(VolleyError error) {
-        try {
-            String responseBody = new String(error.networkResponse.data, "utf-8");
-            JSONObject errors = new JSONObject(responseBody).optJSONObject("errors");
-            String message = "";
-
-            for (Iterator<String> iter = errors.keys(); iter.hasNext(); ) {
-                String key = iter.next();
-
-                message += String.format("%s %s\n", key, errors.optString(key));
-            }
-
-
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-    }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
