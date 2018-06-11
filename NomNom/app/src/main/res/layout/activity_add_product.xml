@@ -6,4 +6,65 @@
     android:layout_height="match_parent"
     tools:context=".AddProductActivity">
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="10dp"
+            android:layout_marginLeft="25dp"
+            android:layout_marginRight="25dp"
+            android:layout_marginTop="10dp"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/image"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="onRImageViewClicked"
+                app:srcCompat="@drawable/com_facebook_profile_picture_blank_square" />
+
+            <EditText
+                android:id="@+id/name"
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/space"
+                android:ems="10"
+                android:hint="Nombre"
+                android:inputType="textPersonName" />
+
+            <EditText
+                android:id="@+id/description"
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/space"
+                android:ems="10"
+                android:hint="Descripción"
+                android:inputType="textMultiLine|textPersonName" />
+
+            <EditText
+                android:id="@+id/price"
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/space"
+                android:ems="10"
+                android:hint="Precio"
+                android:inputType="text|textPersonName|numberDecimal" />
+
+            <Button
+                android:id="@+id/btnSave"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:background="@drawable/button"
+                android:onClick="createProduct"
+                android:text="Agregar"
+                android:textColor="@color/cardview_light_background" />
+        </LinearLayout>
+    </RelativeLayout>
 </android.support.constraint.ConstraintLayout>

@@ -25,8 +25,8 @@
                 android:layout_width="150dp"
                 android:layout_height="150dp"
                 android:layout_marginTop="5dp"
-                app:srcCompat="@drawable/prof1"
-                android:onClick="onViewClicked"/>
+                android:onClick="onViewClicked"
+                app:srcCompat="@drawable/com_facebook_profile_picture_blank_square" />
 
             <EditText
                 android:id="@+id/RtxtName"

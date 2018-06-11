@@ -40,7 +40,7 @@ public class RegisterActivity extends AppCompatActivity implements IAPICaller {
     private String name, lastName, email, password;
     private Uri pictureUri;
     ManagerUser managerUser;
-    int flag_activity=0;
+    int flag_activity=-1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,7 +52,6 @@ public class RegisterActivity extends AppCompatActivity implements IAPICaller {
         lastNameEditText = findViewById(R.id.RtxtLastname);
         emailEditText = findViewById(R.id.RtxtEmail);
         passwordEditText = findViewById(R.id.RtxtPassword);
-
         progressDialog = new ProgressDialog(this);
     }
 
@@ -181,6 +180,13 @@ public class RegisterActivity extends AppCompatActivity implements IAPICaller {
 
             case REGISTER_USER_CODE:
                 try{
+                    Log.d("responde",response.toString());
+                    JSONObject user=response.getJSONObject("user");
+                    managerUser.setIdUser(user.getInt("id"));
+                    managerUser.setName(user.getString("name"));
+                    managerUser.setLastname(user.getString("last_name"));
+                    managerUser.setEmail(user.getString("email"));
+                    managerUser.setPicture(user.getString("picture"));
                     JSONObject job = new JSONObject();
 
                     String[] shome=txthome.getText().toString().split(":")[1].split(",");
@@ -227,7 +233,7 @@ public class RegisterActivity extends AppCompatActivity implements IAPICaller {
 
             txthome.setText("Casa: "+managerUser.getTempLatitud()+", "+managerUser.getTempLongitude());
 
-        }else{
+        }else if(flag_activity==1){
             TextView txtjob = findViewById(R.id.job);
             txtjob.setText("Trabajo: "+managerUser.getTempLatitud()+", "+managerUser.getTempLongitude());
         }

@@ -12,7 +12,7 @@ import com.squareup.picasso.Picasso;
 
 @NonReusable
 @Layout(R.layout.drawer_header)
-public class DrawerHeader {
+public class DrawerHeader  {
 
     @View(R.id.profileImageView)
     private ImageView profileImage;
@@ -28,7 +28,10 @@ public class DrawerHeader {
         ManagerUser managerUser=ManagerUser.getInstance();
         nameTxt.setText(managerUser.getName()+" "+managerUser.getLastname());
         emailTxt.setText(managerUser.getEmail());
-
-        Picasso.with(managerUser.getCurrentContext()).load(managerUser.getPicture()).into(profileImage);
+        if(managerUser.getPicture()!=null) {
+            Picasso.with(managerUser.getCurrentContext()).load(managerUser.getPicture()).into(profileImage);
+        }else{
+            Picasso.with(managerUser.getCurrentContext()).load(R.drawable.com_facebook_profile_picture_blank_square).into(profileImage);
+        }
     }
 }

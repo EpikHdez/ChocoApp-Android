@@ -6,25 +6,39 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.daimajia.slider.library.SliderLayout;
+import com.example.ximena.nomnom.model.Product;
 import com.mindorks.placeholderview.PlaceHolderView;
+import com.squareup.picasso.Picasso;
 
 public class ProductActivity extends AppCompatActivity {
     private PlaceHolderView mDrawerView;
     private DrawerLayout mDrawer;
     private Toolbar mToolbar;
     private PlaceHolderView mGalleryView;
+    ManagerUser managerUser;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_product);
-
+        managerUser=ManagerUser.getInstance();
         mDrawer = (DrawerLayout)findViewById(R.id.drawerLayout);
         mDrawerView = (PlaceHolderView)findViewById(R.id.drawerView);
         mToolbar = (Toolbar)findViewById(R.id.toolbar);
         mGalleryView = (PlaceHolderView)findViewById(R.id.galleryView);
         setupDrawer();
+        Product product=managerUser.getCurrentProduct();
+        TextView txtname=findViewById(R.id.Name);
+        TextView txtdescription=findViewById(R.id.Description);
+        TextView txtprice=findViewById(R.id.Price);
+        ImageView imageView=findViewById(R.id.image);
+        txtname.setText("Nombre: "+product.getName());
+        txtdescription.setText("Descripción: "+product.getDescription());
+        txtprice.setText("Precio: $"+product.getPrice());
+        Picasso.with(this).load(product.getPicture()).into(imageView);
 
 
 

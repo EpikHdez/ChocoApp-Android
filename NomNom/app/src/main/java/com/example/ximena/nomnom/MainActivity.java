@@ -1,5 +1,6 @@
 package com.example.ximena.nomnom;
-
+import com.crashlytics.android.Crashlytics;
+import io.fabric.sdk.android.Fabric;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
@@ -7,9 +8,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import com.cloudinary.Util;
 import com.example.ximena.nomnom.interfaces.IAPICaller;
 import com.example.ximena.nomnom.services.HerokuService;
 import com.facebook.AccessToken;
@@ -23,6 +21,7 @@ import com.facebook.appevents.AppEventsLogger;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
+import com.mixpanel.android.mpmetrics.MixpanelAPI;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -35,7 +34,7 @@ public class MainActivity extends AppCompatActivity implements IAPICaller {
     private static final int REGISTER_USER_CODE = 300;
     private static final String RELATIVE_API = "auth/signin";
     private static final String RELATIVE_API2 = "auth/signup";
-    private String name, lastName, email, password;
+    private String email, password;
     ManagerUser manager;
     int flag=0;
     JSONObject temp;
@@ -45,6 +44,10 @@ public class MainActivity extends AppCompatActivity implements IAPICaller {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        Fabric.with(this, new Crashlytics());
+        String projectToken = "1821b8b7903673aecfd72b7780ef3461";
+        MixpanelAPI mixpanel = MixpanelAPI.getInstance(this, projectToken);
+        mixpanel.track("Video play");
         FacebookSdk.sdkInitialize(getApplicationContext());
         AppEventsLogger.activateApp(this);
         loginButton = (LoginButton) findViewById(R.id.login_button);
@@ -208,8 +211,7 @@ public class MainActivity extends AppCompatActivity implements IAPICaller {
         switch (flag) {
             case 0:
                 Log.d("RESPONSE", String.valueOf(response));
-                finish();
-                openHomenotView();
+
                 try {
                     JSONObject user = (JSONObject) response.get("user");
                     int id = user.getInt("id");
@@ -222,6 +224,8 @@ public class MainActivity extends AppCompatActivity implements IAPICaller {
                     manager.setLastname(lastname);
                     manager.setEmail(email);
                     manager.setPicture(picture);
+                    finish();
+                    openHomenotView();
 
 
                 } catch (JSONException e) {

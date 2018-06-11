@@ -4,11 +4,16 @@
 
     <permission
         android:name="in.wptrafficanalyzer.locationmarkerpreferences.permission.MAPS_RECEIVE"
-        android:protectionLevel="signature" />
+        android:protectionLevel="signature" android:largeHeap="true"/>
 
     <uses-permission android:name="in.wptrafficanalyzer.locationmarkerpreferences.permission.MAPS_RECEIVE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.INTERNET" />
+
+    <!-- This permission is optional but recommended so we can be smart about when to send data  -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <!-- This permission is optional but recommended so events will contain information about bluetooth state -->
+    <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
@@ -75,6 +80,10 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
         <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="784815eed5bd1505440567de400ed55a430505c2"
+            />
+        <meta-data
             android:name="CLOUDINARY_URL"
             android:value="cloudinary://748595732486542:9otU3VDiftLsixb0BlFD2SLR0L4@epikhdez" />
 
@@ -83,6 +92,7 @@
             android:label="@string/title_activity_maps" />
         <activity android:name=".AddProductActivity" />
         <activity android:name=".PointsActivity"></activity>
+
     </application>
 
 </manifest>

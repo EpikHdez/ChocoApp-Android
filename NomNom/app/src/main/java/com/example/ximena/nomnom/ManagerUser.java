@@ -150,4 +150,20 @@ class ManagerUser {
     public void setEmail(String email) {
         this.email = email;
     }
+    public void clean(){
+        currentRestaurant=null;
+        currentProduct=null;
+        currentLatitud=0;
+        currentLongitude=0;
+        tempLatitud=0;
+        tempLongitude=0;
+        name="";
+        lastname="";
+        email=null;
+        picture=null;
+        idUser=0;
+        currentContext=null;
+        flag_map=0;
+
+    }
 }

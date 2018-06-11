@@ -97,14 +97,19 @@ public class DrawerMenuItem {
             case DRAWER_MENU_ITEM_HOME:
                 activity = new Intent(mContext, HomeActivity.class);
                 activity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
                 mContext.startActivity(activity);
+
+
 
                 if(mCallBack != null)mCallBack.onProfileMenuSelected();
                 break;
             case DRAWER_MENU_ITEM_PROFILE:
                 activity = new Intent(mContext, EditProfileActivity.class);
                 activity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
                 mContext.startActivity(activity);
+
                 Log.d("Cambio","Profile");
 
                 if(mCallBack != null)mCallBack.onRequestMenuSelected();
@@ -112,7 +117,9 @@ public class DrawerMenuItem {
             case DRAWER_MENU_ITEM_FAVORITES:
                 activity = new Intent(mContext, FavoriteRestaurantsActivity.class);
                 activity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
                 mContext.startActivity(activity);
+
                 Log.d("Cambio","Fav");
 
                 if(mCallBack != null)mCallBack.onGroupsMenuSelected();
@@ -120,7 +127,9 @@ public class DrawerMenuItem {
             case DRAWER_MENU_ITEM_SEARCH:
                 activity = new Intent(mContext, FindRestaurantsActivity.class);
                 activity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
                 mContext.startActivity(activity);
+
                 Log.d("Cambio","Search");
 
                 if(mCallBack != null)mCallBack.onMessagesMenuSelected();
@@ -128,7 +137,9 @@ public class DrawerMenuItem {
             case DRAWER_MENU_ITEM_FIND:
                 activity = new Intent(mContext, DiscoveryActivity.class);
                 activity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
                 mContext.startActivity(activity);
+
                 Log.d("Cambio","Find");
 
                 if(mCallBack != null)mCallBack.onNotificationsMenuSelected();
@@ -137,7 +148,9 @@ public class DrawerMenuItem {
                 managerUser.setFlag_map(0);
                 activity = new Intent(mContext, MapsActivity.class);
                 activity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
                 mContext.startActivity(activity);
+
                 Log.d("Cambio","Map");
 
                 if(mCallBack != null)mCallBack.onSettingsMenuSelected();
@@ -145,6 +158,7 @@ public class DrawerMenuItem {
             case DRAWER_MENU_ITEM_CONFIG:
                 activity = new Intent(mContext, ConfigActivity.class);
                 activity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
                 mContext.startActivity(activity);
 
                 Log.d("Cambio","Config");
@@ -155,12 +169,16 @@ public class DrawerMenuItem {
 
                 activity = new Intent(mContext, MainActivity.class);
                 activity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
                 mContext.startActivity(activity);
+
+
                 SharedPreferences pref = mContext.getSharedPreferences("MyPref", 0); // 0 - for private mode
                 SharedPreferences.Editor editor = pref.edit();
                 editor.clear();
                 editor.commit(); // commit changes
                 Log.d("Cambio","Logout");
+                managerUser.clean();
                 disconnectFromFacebook();
                 if(mCallBack != null)mCallBack.onLogoutMenuSelected();
                 break;

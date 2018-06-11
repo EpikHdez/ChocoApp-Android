@@ -14,6 +14,7 @@ import com.example.ximena.nomnom.model.Restaurant;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class FavoriteRestaurantAdapter extends ArrayAdapter<Restaurant> implements View.OnClickListener {
 
@@ -65,8 +66,13 @@ public class FavoriteRestaurantAdapter extends ArrayAdapter<Restaurant> implemen
 
         viewHolder.txtName.setText(dataModel.getName());
         viewHolder.txtType.setText(dataModel.getType());
-        Picasso.with(mContext).load("http://i.imgur.com/DvpvklR.png").into(viewHolder.info);
-        viewHolder.info.setOnClickListener(this);
+        HashMap<String,String> pictures=dataModel.getPictures();
+        String picture=pictures.get(dataModel.getName()+"1");
+        if(picture==null) {
+            Picasso.with(mContext).load("http://i.imgur.com/DvpvklR.png").into(viewHolder.info);
+        }else{
+            Picasso.with(mContext).load(picture).into(viewHolder.info);
+        } viewHolder.info.setOnClickListener(this);
         viewHolder.info.setTag(position);
         // Return the completed view to render on screen
 

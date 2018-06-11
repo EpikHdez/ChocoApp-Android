@@ -318,17 +318,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             JSONObject address_type=address.getJSONObject("address_type");
             String type=address_type.getString("name");
             Log.d("type",type);
-            //float latitude, float longitude, String type, HashMap<String, String> pictures
-            JSONArray picturesJSON=rest.getJSONArray("pictures");
-            Log.d("pictures",picturesJSON.toString());
+
             HashMap<String, String> pictures=new HashMap<>();
-            /*for(int j=0;j<picturesJSON.length();j++) {
-                JSONObject picture=picturesJSON.getJSONObject(i);
-                String url=picture.getString("url");
-                Log.d("url",url);
-                pictures.put(name+(j+1), url);
-            }
-            */
+
             Restaurant restaurant=new Restaurant(id,name,Float.valueOf(String.valueOf(latitude)),Float.valueOf(String.valueOf(longitude)),type,pictures);
             MarkerOptions marker = new MarkerOptions().position(new LatLng(latitude, longitude)).title(name);
             markers.add(marker);
@@ -430,6 +422,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void onFailure(int requestCode, String error) {
+
+    }
+    @Override
+    public void onPause() {
+        super.onPause();  // Always call the superclass method first
+        finish();
 
     }
 }

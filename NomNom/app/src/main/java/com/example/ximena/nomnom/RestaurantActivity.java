@@ -51,40 +51,41 @@ public class  RestaurantActivity extends AppCompatActivity implements BaseSlider
         mToolbar = (Toolbar)findViewById(R.id.toolbar);
         mGalleryView = (PlaceHolderView)findViewById(R.id.galleryView);
         setupDrawer();
-        HerokuService.get(RELATIVE_API+"/"+restaurant.getId(),  SHOW_FAVORITE_CODE, this);
-        Hash_file_maps = restaurant.getPictures();
-        if(Hash_file_maps.size()==0){
-            Hash_file_maps.put("Android CupCake", "http://androidblog.esy.es/images/cupcake-1.png");
-        }
-        sliderLayout = (SliderLayout)findViewById(R.id.slider);
+        try{
+            HerokuService.get(RELATIVE_API + "/" + restaurant.getId(), SHOW_FAVORITE_CODE, this);
+            Hash_file_maps = restaurant.getPictures();
+            if (Hash_file_maps.size() == 0) {
+                Hash_file_maps.put("Android CupCake", "http://androidblog.esy.es/images/cupcake-1.png");
+            }
+            sliderLayout = (SliderLayout) findViewById(R.id.slider);
 
 
+            for (String name : Hash_file_maps.keySet()) {
 
-        for(String name : Hash_file_maps.keySet()){
+                TextSliderView textSliderView = new TextSliderView(this);
+                textSliderView
+                        .description(name)
+                        .image(Hash_file_maps.get(name))
+                        .setScaleType(BaseSliderView.ScaleType.Fit)
+                        .setOnSliderClickListener(this);
+                textSliderView.bundle(new Bundle());
+                textSliderView.getBundle()
+                        .putString("extra", name);
+                sliderLayout.addSlider(textSliderView);
+            }
+            sliderLayout.setPresetTransformer(SliderLayout.Transformer.Accordion);
+            sliderLayout.setPresetIndicator(SliderLayout.PresetIndicators.Center_Bottom);
+            sliderLayout.setCustomAnimation(new DescriptionAnimation());
+            sliderLayout.setDuration(3000);
+            sliderLayout.addOnPageChangeListener(this);
 
-            TextSliderView textSliderView = new TextSliderView(this);
-            textSliderView
-                    .description(name)
-                    .image(Hash_file_maps.get(name))
-                    .setScaleType(BaseSliderView.ScaleType.Fit)
-                    .setOnSliderClickListener(this);
-            textSliderView.bundle(new Bundle());
-            textSliderView.getBundle()
-                    .putString("extra",name);
-            sliderLayout.addSlider(textSliderView);
-        }
-        sliderLayout.setPresetTransformer(SliderLayout.Transformer.Accordion);
-        sliderLayout.setPresetIndicator(SliderLayout.PresetIndicators.Center_Bottom);
-        sliderLayout.setCustomAnimation(new DescriptionAnimation());
-        sliderLayout.setDuration(3000);
-        sliderLayout.addOnPageChangeListener(this);
-
-        TextView location = findViewById(R.id.location);
-        TextView name= findViewById(R.id.name);
-        TextView type=findViewById(R.id.type);
-        location.setText(restaurant.getLatitude()+", "+restaurant.getLongitude());
-        name.setText("Nombre: "+restaurant.getName());
-        type.setText("Tipo: "+restaurant.getType());
+            TextView location = findViewById(R.id.location);
+            TextView name = findViewById(R.id.name);
+            TextView type = findViewById(R.id.type);
+            location.setText(restaurant.getLatitude() + ", " + restaurant.getLongitude());
+            name.setText("Nombre: " + restaurant.getName());
+            type.setText("Tipo: " + restaurant.getType());
+        }catch (Exception e){}
 
     }
     public void openProducts(View view){
