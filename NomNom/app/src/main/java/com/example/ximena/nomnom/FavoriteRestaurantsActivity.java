@@ -100,9 +100,9 @@ public class FavoriteRestaurantsActivity extends AppCompatActivity implements IA
                 JSONArray picturesJSON=rest.getJSONArray("pictures");
                 HashMap<String, String> pictures=new HashMap<>();
                 for(int j=0;j<picturesJSON.length();j++) {
-                    JSONObject picture=picturesJSON.getJSONObject(i);
+                    JSONObject picture=picturesJSON.getJSONObject(j);
                     String url=picture.getString("url");
-                    pictures.put(name+(j+1), "http://androidblog.esy.es/images/gingerbread-5.png");
+                    pictures.put(name+(j+1), url);
                 }
                 Restaurant restaurant=new Restaurant(id,name,latitude,longitude,type,pictures);
                 restaurants_JSON.add(restaurant);

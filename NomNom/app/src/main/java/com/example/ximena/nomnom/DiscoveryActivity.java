@@ -160,6 +160,7 @@ public class DiscoveryActivity extends AppCompatActivity implements LocationList
             ArrayList<Restaurant> restaurants_JSON= new ArrayList<>();
         try{
         for(int i=0;i<jsonArray.length();i++){
+
             JSONObject rest=jsonArray.getJSONObject(i);
             int id=rest.getInt("id");
             String name=rest.get("name").toString();
@@ -171,9 +172,9 @@ public class DiscoveryActivity extends AppCompatActivity implements LocationList
             JSONArray picturesJSON=rest.getJSONArray("pictures");
             HashMap<String, String> pictures=new HashMap<>();
             for(int j=0;j<picturesJSON.length();j++) {
-                JSONObject picture=picturesJSON.getJSONObject(i);
+                JSONObject picture=picturesJSON.getJSONObject(j);
                 String url=picture.getString("url");
-                pictures.put(name+(j+1), "http://androidblog.esy.es/images/gingerbread-5.png");
+                pictures.put(name+(j+1), url);
             }
             Restaurant restaurant=new Restaurant(id,name,latitude,longitude,type,pictures);
             restaurants_JSON.add(restaurant);
