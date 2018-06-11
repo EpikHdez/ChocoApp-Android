@@ -3,13 +3,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/drawerLayout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-    <LinearLayout
+    android:layout_height="match_parent"
+    android:background="@color/cardview_light_background">
+
+    <LinearLayout xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        xmlns:tools="http://schemas.android.com/tools"
         android:background="@color/common_google_signin_btn_text_dark_default"
+        android:orientation="vertical"
         tools:context=".RestaurantActivity">
 
         <include
@@ -25,101 +26,114 @@
         </com.mindorks.placeholderview.PlaceHolderView>
 
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center">
-
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:gravity="center_horizontal|center"
-            android:orientation="vertical">
-
-
-            <com.daimajia.slider.library.SliderLayout
-                android:id="@+id/slider"
-                android:layout_width="300dp"
-                android:layout_height="300dp"
-                android:layout_marginTop="10dp" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:gravity="center"
-                android:orientation="horizontal">
-
-                <ImageView
-                    android:id="@+id/imageView3"
-                    android:layout_width="5dp"
-                    android:layout_height="30dp"
-                    android:layout_weight="1"
-                    app:srcCompat="@drawable/point" />
-
-                <TextView
-                    android:id="@+id/location"
-                    android:layout_width="200dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:text="Ubicación"
-                    android:textSize="18sp" />
-
-            </LinearLayout>
-
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="25dp"
-                android:layout_marginRight="25dp"
-                android:orientation="vertical">
-
-                <TextView
-                    android:id="@+id/name"
-                    android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    android:layout_marginTop="10dp"
-                    android:layout_weight="1"
-                    android:text="Nombre"
-                    android:textSize="18sp" />
-
-                <TextView
-                    android:id="@+id/type"
-                    android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    android:layout_weight="1"
-                    android:text="Tipo"
-                    android:textSize="18sp" />
-            </LinearLayout>
-
+            android:gravity="center">
 
             <Button
-                android:id="@+id/button5"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
-                android:layout_marginLeft="25dp"
-                android:layout_marginRight="25dp"
-                android:layout_marginTop="10dp"
-                android:background="@drawable/button"
-                android:onClick="openProducts"
-                android:text="Productos"
-                android:textColor="@color/common_google_signin_btn_text_dark_default" />
+                android:id="@+id/addFav"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentTop="true"
+                android:layout_marginEnd="16dp"
+                android:layout_marginTop="19dp"
+                android:layout_weight="1"
+                android:background="@drawable/lov2"
+                android:onClick="changeFav" />
 
-        </LinearLayout>
-    </RelativeLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center_horizontal|center"
+                android:orientation="vertical">
+
+
+                <com.daimajia.slider.library.SliderLayout
+                    android:id="@+id/slider"
+                    android:layout_width="300dp"
+                    android:layout_height="300dp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:id="@+id/imageView3"
+                        android:layout_width="5dp"
+                        android:layout_height="30dp"
+                        android:layout_weight="1"
+                        app:srcCompat="@drawable/point" />
+
+                    <TextView
+                        android:id="@+id/location"
+                        android:layout_width="200dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:text="Ubicación"
+                        android:textSize="18sp" />
+
+                </LinearLayout>
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="25dp"
+                    android:layout_marginRight="25dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/name"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:layout_marginTop="10dp"
+                        android:layout_weight="1"
+                        android:text="Nombre"
+                        android:textSize="18sp" />
+
+                    <TextView
+                        android:id="@+id/type"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:layout_weight="1"
+                        android:text="Tipo"
+                        android:textSize="18sp" />
+                </LinearLayout>
+
+
+                <Button
+                    android:id="@+id/button5"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginLeft="25dp"
+                    android:layout_marginRight="25dp"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/button"
+                    android:onClick="openProducts"
+                    android:text="Productos"
+                    android:textColor="@color/common_google_signin_btn_text_dark_default" />
+
+            </LinearLayout>
+        </RelativeLayout>
 
     </LinearLayout>
+
     <FrameLayout
         android:layout_width="250dp"
         android:layout_height="match_parent"
         android:layout_gravity="left"
         android:background="@android:color/white">
+
         <com.mindorks.placeholderview.PlaceHolderView
             android:id="@+id/drawerView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:scrollbars="vertical"/>
+            android:scrollbars="vertical" />
     </FrameLayout>
 </android.support.v4.widget.DrawerLayout>

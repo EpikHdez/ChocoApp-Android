@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -16,12 +17,16 @@ import com.daimajia.slider.library.SliderLayout;
 import com.daimajia.slider.library.SliderTypes.BaseSliderView;
 import com.daimajia.slider.library.SliderTypes.TextSliderView;
 import com.daimajia.slider.library.Tricks.ViewPagerEx;
+import com.example.ximena.nomnom.interfaces.IAPICaller;
 import com.example.ximena.nomnom.model.Restaurant;
+import com.example.ximena.nomnom.services.HerokuService;
 import com.mindorks.placeholderview.PlaceHolderView;
+
+import org.json.JSONObject;
 
 import java.util.HashMap;
 
-public class  RestaurantActivity extends AppCompatActivity implements BaseSliderView.OnSliderClickListener, ViewPagerEx.OnPageChangeListener {
+public class  RestaurantActivity extends AppCompatActivity implements BaseSliderView.OnSliderClickListener, ViewPagerEx.OnPageChangeListener, IAPICaller {
     private PlaceHolderView mDrawerView;
     private DrawerLayout mDrawer;
     private Toolbar mToolbar;
@@ -29,6 +34,11 @@ public class  RestaurantActivity extends AppCompatActivity implements BaseSlider
     SliderLayout sliderLayout;
     HashMap<String,String> Hash_file_maps ;
     ManagerUser managerUser;
+    private static final int FAVORITE_CODE = 100;
+    private static final int SHOW_FAVORITE_CODE = 200;
+    private static final int DELETE_FAVORITE_CODE = 300;
+    private static final String RELATIVE_API = "my/favorite_place";
+    boolean exist=false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,6 +50,7 @@ public class  RestaurantActivity extends AppCompatActivity implements BaseSlider
         mToolbar = (Toolbar)findViewById(R.id.toolbar);
         mGalleryView = (PlaceHolderView)findViewById(R.id.galleryView);
         setupDrawer();
+        HerokuService.get(RELATIVE_API+"/"+restaurant.getId(),  SHOW_FAVORITE_CODE, this);
         Hash_file_maps = restaurant.getPictures();
         if(Hash_file_maps.size()==0){
             Hash_file_maps.put("Android CupCake", "http://androidblog.esy.es/images/cupcake-1.png");
@@ -78,6 +89,20 @@ public class  RestaurantActivity extends AppCompatActivity implements BaseSlider
     public void openProducts(View view){
         Intent activity = new Intent(this, ProductsActivity.class);
         startActivity(activity);
+    }
+    public void changeFav(View view){
+        try {
+            JSONObject place = new JSONObject();
+            place.put("place_id", managerUser.getCurrentRestaurant().getId());
+            if(!exist) {
+                HerokuService.put(RELATIVE_API, place, FAVORITE_CODE, this);
+
+            }else {
+                HerokuService.delete(RELATIVE_API + "/" + managerUser.getCurrentRestaurant().getId(), DELETE_FAVORITE_CODE, this);
+            }
+        }catch (Exception e){
+
+        }
     }
     private void setupDrawer(){
         mDrawerView
@@ -131,6 +156,40 @@ public class  RestaurantActivity extends AppCompatActivity implements BaseSlider
 
     @Override
     public void onPageScrollStateChanged(int state) {
+
+    }
+
+    @Override
+    public void onSuccess(int requestCode, JSONObject response) {
+        Button favbtn=findViewById(R.id.addFav);
+        try {
+            switch (requestCode) {
+                case FAVORITE_CODE:
+                    favbtn.setBackgroundResource((R.drawable.lov3));
+                    exist=true;
+                    break;
+                case DELETE_FAVORITE_CODE:
+                    favbtn.setBackgroundResource((R.drawable.lov2));
+                    exist=false;
+                    break;
+                case SHOW_FAVORITE_CODE:
+                    Log.d("RESPONSE A", response.toString());
+                    JSONObject favorite_place = response.getJSONObject("favorite_place");
+                    if(favorite_place!=null){
+                        exist=true;
+                        favbtn.setBackgroundResource((R.drawable.lov3));
+
+                    }else{
+                        favbtn.setBackgroundResource((R.drawable.lov2));
+                        exist=false;
+                    }
+                    break;
+            }
+        }catch (Exception e){}
+    }
+
+    @Override
+    public void onFailure(int requestCode, String error) {
 
     }
 }
