@@ -177,8 +177,7 @@ public class  RestaurantActivity extends AppCompatActivity implements BaseSlider
                     break;
                 case SHOW_FAVORITE_CODE:
                     Log.d("RESPONSE A", response.toString());
-                    JSONObject favorite_place = response.getJSONObject("favorite_place");
-                    if(favorite_place!=null){
+                    if(response.has("favorite_place")){
                         exist=true;
                         favbtn.setBackgroundResource((R.drawable.lov3));
 
