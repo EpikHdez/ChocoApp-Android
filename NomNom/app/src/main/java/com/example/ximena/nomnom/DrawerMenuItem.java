@@ -172,7 +172,6 @@ public class DrawerMenuItem {
 
                 mContext.startActivity(activity);
 
-
                 SharedPreferences pref = mContext.getSharedPreferences("MyPref", 0); // 0 - for private mode
                 SharedPreferences.Editor editor = pref.edit();
                 editor.clear();

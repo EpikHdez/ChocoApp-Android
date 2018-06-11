@@ -186,7 +186,7 @@ public class DiscoveryActivity extends AppCompatActivity implements LocationList
     }
     @Override
     public void onSuccess(int requestCode, JSONObject response) {
-        Log.d("Si llamo","si");
+
         try {
             switch (requestCode) {
                 case NEARBY_USER_CODE:
