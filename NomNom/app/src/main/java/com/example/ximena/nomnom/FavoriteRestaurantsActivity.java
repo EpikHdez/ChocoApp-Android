@@ -16,6 +16,7 @@ import android.widget.ListView;
 
 import com.example.ximena.nomnom.interfaces.IAPICaller;
 import com.example.ximena.nomnom.model.Restaurant;
+import com.example.ximena.nomnom.services.HerokuService;
 import com.mindorks.placeholderview.PlaceHolderView;
 
 import org.json.JSONArray;
@@ -33,7 +34,7 @@ public class FavoriteRestaurantsActivity extends AppCompatActivity implements IA
     ListView listView;
     private static FavoriteRestaurantAdapter adapter;
     private static final int FAVS_USER_CODE = 400;
-    private static final String RELATIVE_API = "nearby";
+    private static final String RELATIVE_API = "my/favorite_place";
     ManagerUser managerUser;
     @SuppressLint("WrongViewCast")
     @Override
@@ -46,6 +47,7 @@ public class FavoriteRestaurantsActivity extends AppCompatActivity implements IA
         mToolbar = (Toolbar)findViewById(R.id.toolbar);
         mGalleryView = (PlaceHolderView)findViewById(R.id.galleryView);
         setupDrawer();
+        HerokuService.get(RELATIVE_API,  FAVS_USER_CODE, this);
 
         listView=(ListView)findViewById(R.id.list_fav_resta);
 
@@ -138,8 +140,8 @@ public class FavoriteRestaurantsActivity extends AppCompatActivity implements IA
         try {
             switch (requestCode) {
                 case FAVS_USER_CODE:
-
-                    JSONArray places = response.getJSONArray("places");
+                    Log.d("response",response.toString());
+                    JSONArray places = response.getJSONArray("favorite_places");
                     Log.d("places", places.toString());
                     convertToRestaurants(places);
                     dataModels =  convertToRestaurants(places);
