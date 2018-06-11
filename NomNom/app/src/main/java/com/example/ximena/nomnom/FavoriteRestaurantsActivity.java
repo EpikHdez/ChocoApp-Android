@@ -51,30 +51,7 @@ public class FavoriteRestaurantsActivity extends AppCompatActivity implements IA
 
         listView=(ListView)findViewById(R.id.list_fav_resta);
 
-        dataModels= new ArrayList<>();
-        for(int i=0;i<20;i++) {
-            HashMap<String,String> Hash_file_maps ;
-            Hash_file_maps = new HashMap<String, String>();
-            Hash_file_maps.put("Android CupCake", "http://androidblog.esy.es/images/cupcake-1.png");
-            Hash_file_maps.put("Android Donut", "http://androidblog.esy.es/images/donut-2.png");
-            Hash_file_maps.put("Android Eclair", "http://androidblog.esy.es/images/eclair-3.png");
-            Hash_file_maps.put("Android Froyo", "http://androidblog.esy.es/images/froyo-4.png");
-            Hash_file_maps.put("Android GingerBread", "http://androidblog.esy.es/images/gingerbread-5.png");
-            dataModels.add(new Restaurant(1, "Restaurante", 50.0f, 50.0f, "comida",Hash_file_maps));
-        }
 
-        adapter= new FavoriteRestaurantAdapter(dataModels,getApplicationContext());
-
-        listView.setAdapter(adapter);
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-                Restaurant dataModel= dataModels.get(position);
-                openRestaurant();
-
-            }
-        });
 
     }
     public void openRestaurant(){
@@ -111,7 +88,8 @@ public class FavoriteRestaurantsActivity extends AppCompatActivity implements IA
         ArrayList<Restaurant> restaurants_JSON= new ArrayList<>();
         try{
             for(int i=0;i<jsonArray.length();i++){
-                JSONObject rest=jsonArray.getJSONObject(i);
+                JSONObject rest1=jsonArray.getJSONObject(i);
+                JSONObject rest=rest1.getJSONObject("place");
                 int id=rest.getInt("id");
                 String name=rest.get("name").toString();
                 JSONObject address=rest.getJSONObject("address");
@@ -143,9 +121,9 @@ public class FavoriteRestaurantsActivity extends AppCompatActivity implements IA
                     Log.d("response",response.toString());
                     JSONArray places = response.getJSONArray("favorite_places");
                     Log.d("places", places.toString());
-                    convertToRestaurants(places);
-                    dataModels =  convertToRestaurants(places);
 
+                    dataModels =  convertToRestaurants(places);
+                    Log.d("dataModels",dataModels.toString());
                     adapter = new FavoriteRestaurantAdapter(dataModels, getApplicationContext());
 
                     listView.setAdapter(adapter);
